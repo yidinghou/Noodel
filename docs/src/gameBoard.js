@@ -21,5 +21,38 @@ export function createGameBoard(rows = 6, cols = 7) {
     }
 }
 
-// Example usage (call this after DOM is loaded):
-// createGameBoard();
+export class GameState {
+    constructor(boardContainerId = 'game-board', rows = 6, cols = 7) {
+        this.boardContainer = document.getElementById(boardContainerId);
+        this.rows = rows;
+        this.cols = cols;
+    }
+
+    getTileElement(row, col) {
+        return this.boardContainer.querySelector(`.tile[data-row="${row}"][data-col="${col}"]`);
+    }
+
+    setTileContent(row, col, content) {
+        const tile = this.getTileElement(row, col);
+        if (tile) tile.textContent = content;
+    }
+
+    clearTile(row, col) {
+        const tile = this.getTileElement(row, col);
+        if (tile) tile.textContent = '';
+    }
+
+    setTileClass(row, col, className) {
+        const tile = this.getTileElement(row, col);
+        if (tile) tile.className = `tile ${className}`;
+    }
+
+    resetBoard() {
+        for (let row = 0; row < this.rows; row++) {
+            for (let col = 0; col < this.cols; col++) {
+                this.clearTile(row, col);
+                this.setTileClass(row, col, '');
+            }
+        }
+    }
+}
