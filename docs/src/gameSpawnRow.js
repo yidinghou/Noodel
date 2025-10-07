@@ -3,50 +3,50 @@
  * Each spawn tile is a div with classes and data attributes for column position.
  */
 export function createSpawnRow(cols = 7) {
-    const spawnRowContainer = document.getElementById('spawn-row');
-    spawnRowContainer.innerHTML = ''; // Clear any previous spawn row
+  const spawnRowContainer = document.getElementById('spawn-row');
+  spawnRowContainer.innerHTML = ''; // Clear any previous spawn row
 
-    // Set dynamic grid template columns and rows
-    spawnRowContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-    spawnRowContainer.style.gridTemplateRows = '1fr';
+  // Set dynamic grid template columns and rows
+  spawnRowContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  spawnRowContainer.style.gridTemplateRows = '1fr';
 
-    for (let col = 0; col < cols; col++) {
-        const spawnTile = document.createElement('div');
-        spawnTile.className = 'spawn-tile';
-        spawnTile.dataset.col = col;
-        spawnRowContainer.appendChild(spawnTile);
-    }
+  for (let col = 0; col < cols; col++) {
+    const spawnTile = document.createElement('div');
+    spawnTile.className = 'spawn-tile';
+    spawnTile.dataset.col = col;
+    spawnRowContainer.appendChild(spawnTile);
+  }
 }
 
 export class SpawnRow {
-    constructor(spawnRowId = 'spawn-row', cols = 7) {
-        this.spawnRowContainer = document.getElementById(spawnRowId);
-        this.cols = cols;
-    }
+  constructor(spawnRowId = 'spawn-row', cols = 7) {
+    this.spawnRowContainer = document.getElementById(spawnRowId);
+    this.cols = cols;
+  }
 
-    getSpawnTileElement(col) {
-        return this.spawnRowContainer.querySelector(`.spawn-tile[data-col="${col}"]`);
-    }
+  getSpawnTileElement(col) {
+    return this.spawnRowContainer.querySelector(`.spawn-tile[data-col="${col}"]`);
+  }
 
-    setSpawnTileContent(col, content) {
-        const tile = this.getSpawnTileElement(col);
-        if (tile) tile.textContent = content;
-    }
+  setSpawnTileContent(col, content) {
+    const tile = this.getSpawnTileElement(col);
+    if (tile) tile.textContent = content;
+  }
 
-    clearSpawnTile(col) {
-        const tile = this.getSpawnTileElement(col);
-        if (tile) tile.textContent = '';
-    }
+  clearSpawnTile(col) {
+    const tile = this.getSpawnTileElement(col);
+    if (tile) tile.textContent = '';
+  }
 
-    setSpawnTileClass(col, className) {
-        const tile = this.getSpawnTileElement(col);
-        if (tile) tile.className = `spawn-tile ${className}`;
-    }
+  setSpawnTileClass(col, className) {
+    const tile = this.getSpawnTileElement(col);
+    if (tile) tile.className = `spawn-tile ${className}`;
+  }
 
-    clearAllSpawnTiles() {
-        for (let col = 0; col < this.cols; col++) {
-            this.clearSpawnTile(col);
-            this.setSpawnTileClass(col, 'inactive');
-        }
+  clearAllSpawnTiles() {
+    for (let col = 0; col < this.cols; col++) {
+      this.clearSpawnTile(col);
+      this.setSpawnTileClass(col, 'inactive');
     }
+  }
 }

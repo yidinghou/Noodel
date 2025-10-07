@@ -1,88 +1,86 @@
 /* Mobile adjustments */
 @media (max-width: 768px) {
-    #game-board {
-        max-width: 100%;  /* Full width on small screens */
-    }
-    .tile {
-        box-shadow: 0 0 0 1px #777 inset; /* Slightly darker grid lines for visibility */
-    }
+  #game-board {
+    max-width: 100%; /* Full width on small screens */
+  }
+  .tile {
+    box-shadow: 0 0 0 1px #777 inset; /* Slightly darker grid lines for visibility */
+  }
 }
 /* Ensure tiles are square and have borders */
 #game-board {
-    display: grid;
-    width: 100%;
-    max-width: 420px; /* 7 columns * 60px per tile */
-    aspect-ratio: 7 / 6;
-    margin: 0 auto;
-    gap: 0;
-
+  display: grid;
+  width: 100%;
+  max-width: 420px; /* 7 columns * 60px per tile */
+  aspect-ratio: 7 / 6;
+  margin: 0 auto;
+  gap: 0;
 }
 .tile {
-    background: #f8f8fa;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: clamp(1rem, 4vw, 1.5rem); /* Responsive font size */
-    min-height: 35px; /* Minimum height for touch targets */
-    min-width: 35px;  /* Minimum width for touch targets */
-    box-shadow: 0 0 0 1px #444 inset;
-    border: none;
+  background: #f8f8fa;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1rem, 4vw, 1.5rem); /* Responsive font size */
+  min-height: 35px; /* Minimum height for touch targets */
+  min-width: 35px; /* Minimum width for touch targets */
+  box-shadow: 0 0 0 1px #444 inset;
+  border: none;
 }
 
 /* Falling tile animation style */
 .tile.falling {
-    background: lightblue;
-    transition: background 0.1s ease;
+  background: lightblue;
+  transition: background 0.1s ease;
 }
 
 /* Locked tile style - gray background with white text */
 .tile.locked {
-    background: #6c757d;
-    color: white;
+  background: #6c757d;
+  color: white;
 }
 
 /* Spawn Row styles */
 #spawn-row {
-    display: grid;
-    width: 100%;
-    max-width: 420px; /* Match game board width */
-    aspect-ratio: 7 / 1;
-    margin: 0 auto;
-    gap: 0;
+  display: grid;
+  width: 100%;
+  max-width: 420px; /* Match game board width */
+  aspect-ratio: 7 / 1;
+  margin: 0 auto;
+  gap: 0;
 }
 
 .spawn-tile {
-    background: transparent;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: clamp(1rem, 4vw, 1.5rem);
-    min-height: 35px;
-    min-width: 35px;
-    border: 1px dashed rgba(68, 68, 68, 0.2); /* Default subtle border */
-    opacity: 0.5; /* Semi-transparent */
+  background: transparent;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  min-height: 35px;
+  min-width: 35px;
+  border: 1px dashed rgba(68, 68, 68, 0.2); /* Default subtle border */
+  opacity: 0.5; /* Semi-transparent */
 }
 
 /* Spawn row inactive: invisible border */
 .spawn-tile.inactive {
-    border: 1px solid transparent !important;
-    opacity: 0.2;
+  border: 1px solid transparent !important;
+  opacity: 0.2;
 }
 
 /* Spawn row active: bold border */
 .spawn-tile.active {
-    border: 3px solid #222 !important;
-    opacity: 1;
+  border: 3px solid #222 !important;
+  opacity: 1;
 }
 
-
 .spawn-tile:hover {
-    background: rgba(173, 216, 230, 0.2); /* Light blue hint on hover */
-    cursor: pointer;
+  background: rgba(173, 216, 230, 0.2); /* Light blue hint on hover */
+  cursor: pointer;
 }
