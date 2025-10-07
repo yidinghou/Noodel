@@ -1,4 +1,5 @@
 import { createGameBoard, GameBoard } from './gameBoard.js';
+import { createSpawnRow, SpawnRow } from './gameSpawnRow.js';
 
 export class Game {
     constructor(boardId, rows, cols) {
@@ -13,6 +14,10 @@ export class Game {
         createGameBoard();
         this.gameBoard = new GameBoard(this.boardId, this.rows, this.cols);
         this.gameBoardElement = document.getElementById(this.boardId);
+
+        createSpawnRow(7);
+        const spawnRow = new SpawnRow('spawn-row', 7);
+        spawnRow.setSpawnTileContent(0, 'A'); // Set letter in column 0
 
         this.setupEventListeners();
         console.log('Game initialized.');

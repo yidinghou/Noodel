@@ -43,3 +43,33 @@
     background: #6c757d;
     color: white;
 }
+
+/* Spawn Row styles */
+#spawn-row {
+    display: grid;
+    width: 100%;
+    max-width: 420px; /* Match game board width */
+    aspect-ratio: 7 / 1;
+    margin: 0 auto;
+    gap: 0;
+}
+
+.spawn-tile {
+    background: transparent;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1rem, 4vw, 1.5rem);
+    min-height: 35px;
+    min-width: 35px;
+    border: 1px dashed rgba(68, 68, 68, 0.2); /* Subtle dashed border */
+    opacity: 0.5; /* Semi-transparent */
+}
+
+.spawn-tile:hover {
+    background: rgba(173, 216, 230, 0.2); /* Light blue hint on hover */
+    cursor: pointer;
+}
