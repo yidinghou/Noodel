@@ -80,7 +80,7 @@
     border: 3px solid #222 !important;
     opacity: 1;
 }
-}
+
 
 .spawn-tile:hover {
     background: rgba(173, 216, 230, 0.2); /* Light blue hint on hover */

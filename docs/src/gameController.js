@@ -1,5 +1,6 @@
 import { createGameBoard, GameBoard } from './gameBoard.js';
 import { createSpawnRow, SpawnRow } from './gameSpawnRow.js';
+import { TileGenerator } from './TileGenerator.js';
 
 export class Game {
     constructor(boardId, rows, cols) {
@@ -8,6 +9,7 @@ export class Game {
         this.cols = cols;
         this.gameBoard = null;
         this.gameBoardElement = null;
+        this.tileGenerator = new TileGenerator();
     }
 
     init() {
@@ -18,7 +20,7 @@ export class Game {
         createSpawnRow(7);
         const spawnRow = new SpawnRow('spawn-row', 7);
         this.spawnRow = spawnRow;
-        this.spawnLetter = 'A';
+        this.spawnLetter = this.tileGenerator.getNextTile().toUpperCase();
         this.spawnRow.setSpawnTileContent(0, this.spawnLetter); // Initial position
 
         this.setupEventListeners();
@@ -57,8 +59,11 @@ export class Game {
             }
 
             // Animate the tile falling from top to the lowest empty position
-            const newLetter = 'B'; // Replace with your logic
+            const newLetter = this.spawnLetter;
             await this.gameBoard.animateTileFall(col, 0, endRow, newLetter);
+            
+            // Get the next letter for the spawn row
+            this.spawnLetter = this.tileGenerator.getNextTile().toUpperCase();
             console.log(`Dropped tile in column: ${col}, landed at row: ${endRow}`);
         }
     }
