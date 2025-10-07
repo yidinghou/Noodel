@@ -16,7 +16,7 @@ describe('WordValidator Letter Collection Methods', () => {
   });
 
   describe('getColumnLetters', () => {
-    it('should collect letters from a column with content', () => {
+    it('should collect letters and positions from column 0 with "CAT" pattern', () => {
       // Set up a column with letters
       board.setTileContent(0, 0, 'C');
       board.setTileContent(1, 0, 'A');
@@ -31,7 +31,7 @@ describe('WordValidator Letter Collection Methods', () => {
       expect(result.positions[2]).toEqual([2, 0]);
     });
 
-    it('should handle empty column', () => {
+    it('should return all spaces and correct positions for empty column', () => {
       const result = validator.getColumnLetters(board, 0);
 
       expect(result.letters).toBe('      '); // 6 spaces for empty tiles
@@ -40,7 +40,7 @@ describe('WordValidator Letter Collection Methods', () => {
   });
 
   describe('getRowLetters', () => {
-    it('should collect letters from a row with content', () => {
+    it('should collect letters and positions from row 0 with "DOG" pattern', () => {
       // Set up a row with letters
       board.setTileContent(0, 0, 'D');
       board.setTileContent(0, 1, 'O');
@@ -92,7 +92,7 @@ describe('WordValidator Letter Collection Methods', () => {
         expect(result.positions[3]).toEqual([3, 3]);
       });
 
-      it('should return the same result for main diagonal from different middle points', () => {
+      it('should return consistent results when called from different points on same diagonal', () => {
         // Set up diagonal: (0,1) 'S', (1,2) 'U', (2,3) 'N'
         board.setTileContent(0, 1, 'S');
         board.setTileContent(1, 2, 'U');
@@ -113,8 +113,8 @@ describe('WordValidator Letter Collection Methods', () => {
       });
     });
 
-    describe('anti diagonal (top-left to bottom-right)', () => {
-      it('should collect letters from anti diagonal', () => {
+    describe('anti diagonal (top-right to bottom-left)', () => {
+      it('should collect letters from anti diagonal with "ANTI" pattern', () => {
         // Set up anti diagonal from (0,6) going down-left
         board.setTileContent(3, 3, 'A');
         board.setTileContent(2, 4, 'N');
@@ -162,7 +162,7 @@ describe('WordValidator Letter Collection Methods', () => {
     });
 
     describe('edge cases', () => {
-      it('should handle single tile diagonal', () => {
+      it('should handle diagonal with only one tile', () => {
         board.setTileContent(5, 6, 'X');
 
         const result = validator.getDiagonalLetters(board, 5, 6, 'anti');
@@ -172,7 +172,7 @@ describe('WordValidator Letter Collection Methods', () => {
         expect(result.positions[0]).toEqual([5, 6]);
       });
 
-      it('should handle diagonal that starts at board edge', () => {
+      it('should collect letters from diagonal starting at board edge', () => {
         // Test diagonal starting from right edge
         board.setTileContent(2, 6, 'E');
         board.setTileContent(4, 4, 'D');
