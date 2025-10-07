@@ -152,8 +152,12 @@ export class GameBoard {
     // Get affected columns before clearing
     const affectedCols = [...new Set(positions.map(([, col]) => col))];
     
-    // Clear tiles
+    // Clear tiles and remove animation classes
     positions.forEach(([row, col]) => {
+      const tile = this.getTileElement(row, col);
+      if (tile) {
+        tile.classList.remove('highlight', 'shake');
+      }
       this.clearTile(row, col);
       this.setTileClass(row, col, '');      
     });
