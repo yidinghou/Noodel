@@ -130,13 +130,13 @@ export class TileGenerator {
     }
 
     /**
-     * Gets the next tile in the sequence. If the sequence is exhausted, it regenerates it.
+     * Gets the next tile in the sequence by incrementing the index.
      * @returns {string} The next letter in the generated sequence.
      */
     getNextTile() {
-        // If we've exhausted the current batch, generate a new one
+        // If we've exhausted the current batch, wrap around to the beginning
         if (this.currentIndex >= this.tiles.length) {
-            this.generateTiles();
+            this.currentIndex = 0;
         }
 
         // Return the current tile and increment the index
