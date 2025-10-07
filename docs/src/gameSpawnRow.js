@@ -46,7 +46,7 @@ export class SpawnRow {
     clearAllSpawnTiles() {
         for (let col = 0; col < this.cols; col++) {
             this.clearSpawnTile(col);
-            this.setSpawnTileClass(col, '');
+            this.setSpawnTileClass(col, 'inactive');
         }
     }
 }

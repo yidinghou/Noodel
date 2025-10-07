@@ -65,8 +65,21 @@
     font-size: clamp(1rem, 4vw, 1.5rem);
     min-height: 35px;
     min-width: 35px;
-    border: 1px dashed rgba(68, 68, 68, 0.2); /* Subtle dashed border */
+    border: 1px dashed rgba(68, 68, 68, 0.2); /* Default subtle border */
     opacity: 0.5; /* Semi-transparent */
+}
+
+/* Spawn row inactive: invisible border */
+.spawn-tile.inactive {
+    border: 1px solid transparent !important;
+    opacity: 0.2;
+}
+
+/* Spawn row active: bold border */
+.spawn-tile.active {
+    border: 3px solid #222 !important;
+    opacity: 1;
+}
 }
 
 .spawn-tile:hover {

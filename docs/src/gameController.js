@@ -17,7 +17,9 @@ export class Game {
 
         createSpawnRow(7);
         const spawnRow = new SpawnRow('spawn-row', 7);
-        spawnRow.setSpawnTileContent(0, 'A'); // Set letter in column 0
+        this.spawnRow = spawnRow;
+        this.spawnLetter = 'A';
+        this.spawnRow.setSpawnTileContent(0, this.spawnLetter); // Initial position
 
         this.setupEventListeners();
         console.log('Game initialized.');
@@ -27,6 +29,17 @@ export class Game {
         if (this.gameBoardElement) {
             // Bind 'this' to ensure it refers to the Game instance in the handler
             this.gameBoardElement.addEventListener('click', this.handleBoardClick.bind(this));
+
+                // Mouseover: move spawn letter to hovered column
+                const tiles = this.gameBoardElement.querySelectorAll('.tile');
+                tiles.forEach(tile => {
+                    tile.addEventListener('mouseover', (event) => {
+                        const col = parseInt(tile.dataset.col, 10);
+                        this.spawnRow.clearAllSpawnTiles();
+                        this.spawnRow.setSpawnTileContent(col, this.spawnLetter);
+                        this.spawnRow.setSpawnTileClass(col, 'active');
+                    });
+                });
         }
     }
 
