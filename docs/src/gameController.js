@@ -15,9 +15,6 @@ export class Game {
         this.gameBoardElement = document.getElementById(this.boardId);
 
         this.setupEventListeners();
-
-        // Example initial state
-        this.gameBoard.setTileContent(2, 3, 'A');
         console.log('Game initialized.');
     }
 
@@ -28,16 +25,23 @@ export class Game {
         }
     }
 
-    handleBoardClick(event) {
+    async handleBoardClick(event) {
         const tile = event.target.closest('.tile');
         if (tile) {
-            const row = parseInt(tile.dataset.row, 10);
             const col = parseInt(tile.dataset.col, 10);
+            const tilesInColumn = this.gameBoard.countTilesPerColumn(col);
+            const endRow = this.rows - 1 - tilesInColumn;
+            
+            // Check if column is full
+            if (endRow < 0) {
+                console.log(`Column ${col} is full!`);
+                return;
+            }
 
-            // Example: Update the clicked tile with a new letter
+            // Animate the tile falling from top to the lowest empty position
             const newLetter = 'B'; // Replace with your logic
-            this.gameBoard.setTileContent(row, col, newLetter);
-            console.log(`Clicked on tile at row: ${row}, col: ${col}`);
+            await this.gameBoard.animateTileFall(col, 0, endRow, newLetter);
+            console.log(`Dropped tile in column: ${col}, landed at row: ${endRow}`);
         }
     }
 }
