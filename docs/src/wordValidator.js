@@ -10,9 +10,18 @@ export class WordValidator {
    */
   constructor(minWordLength = 3) {
     this.dictionary = new WordDictionary();
-    this.dictionary.loadWords();
-
     this.minWordLength = minWordLength;
+    this.isReady = false;
+  }
+
+  /**
+   * Initializes the word validator by loading the dictionary
+   * @returns {Promise<void>}
+   */
+  async init() {
+    await this.dictionary.loadWords();
+    this.isReady = true;
+    console.log(`WordValidator initialized with ${this.dictionary.getWordCount()} words`);
   }
 
   // --- Word Collection Helpers ---
