@@ -104,49 +104,69 @@ export class WordValidator {
 
   /**
    * Collects letters along a diagonal, substituting empty tiles with spaces.
-   * @param {string} direction - 'main' for top-left to bottom-right, 'anti' for bottom-left to top-right.
+   * @param {number} tileRow - The row of the tile we're checking from
+   * @param {number} tileCol - The column of the tile we're checking from  
+   * @param {string} direction - 'topToBottom' or 'bottomToTop' (always left to right)
    */
-  getDiagonalLetters(board, startRow, startCol, direction = 'main') {
-    let letters = '';
-    const positions = [];
+  getDiagonalLetters(board, tileRow, tileCol, direction = 'topToBottom') {
+    // Calculate the actual start position (leftmost point of the diagonal)
+    const { startRow, startCol } = this._findDiagonalStart(board, tileRow, tileCol, direction);
+    
+    // Generate all positions along the diagonal
+    const positions = this._generateDiagonalPositions(board, startRow, startCol, direction);
+    
+    // Collect letters from all positions
+    const letters = positions
+      .map(([r, c]) => {
+        const tile = board.getTileElement(r, c);
+        return tile?.textContent || ' ';
+      })
+      .join('');
 
-    // Define diagonal traversal direction
-    const rowIncrement = direction === 'main' ? 1 : -1; // Down for main, up for anti
+    return this.filterSpacesAndPositions(letters, positions);
+  }
 
-    // Step 1: Find the true start of the diagonal line
-    let r = startRow;
-    let c = startCol;
+  /**
+   * Helper: Find the leftmost starting position for a diagonal
+   */
+  _findDiagonalStart(board, tileRow, tileCol, direction) {
+    let r = tileRow;
+    let c = tileCol;
 
-    // Move to the leftmost position on the diagonal
-    if (direction === 'main') {
-      // For main diagonal (top-left to bottom-right)
+    if (direction === 'topToBottom') {
+      // Move to top-left corner of diagonal
       while (r > 0 && c > 0) {
         r--;
         c--;
       }
-    } else {
-      // For anti-diagonal (bottom-left to top-right)
+    } else { // bottomToTop
+      // Move to bottom-left corner of diagonal  
       while (r < board.rows - 1 && c > 0) {
         r++;
         c--;
       }
     }
 
-    // Step 2: Traverse diagonally right, collecting letters
-    while (r >= 0 && r < board.rows && c < board.cols) {
-      const tile = board.getTileElement(r, c);
-      if (tile && tile.textContent) {
-        letters += tile.textContent;
-      } else {
-        letters += ' '; // Add space for empty/null tiles
-      }
-      positions.push([r, c]);
+    return { startRow: r, startCol: c };
+  }
 
-      c++; // Move right
-      r += rowIncrement; // Move down for main diagonal, up for anti-diagonal
+  /**
+   * Helper: Generate all valid positions along a diagonal
+   */
+  _generateDiagonalPositions(board, startRow, startCol, direction) {
+    const positions = [];
+    const rowIncrement = direction === 'topToBottom' ? 1 : -1;
+    
+    let r = startRow;
+    let c = startCol;
+
+    while (r >= 0 && r < board.rows && c < board.cols) {
+      positions.push([r, c]);
+      c++; // Always move right
+      r += rowIncrement; // Move down or up depending on direction
     }
 
-    return this.filterSpacesAndPositions(letters, positions);
+    return positions;
   }
 
   /**
@@ -235,7 +255,7 @@ export class WordValidator {
 
       case 'mainDiag': {
         // Get the diagonal letters and positions to ensure consistency
-        const { positions: mainDiagPositions } = this.getDiagonalLetters(board, row, col, 'main');
+        const { positions: mainDiagPositions } = this.getDiagonalLetters(board, row, col, 'topToBottom');
 
         // Use the actual positions from getDiagonalLetters for accuracy
         for (let i = 0; i < wordObj.word.length; i++) {
@@ -251,7 +271,7 @@ export class WordValidator {
 
       case 'antiDiag': {
         // Get the diagonal letters and positions to ensure consistency
-        const { positions: antiDiagPositions } = this.getDiagonalLetters(board, row, col, 'anti');
+        const { positions: antiDiagPositions } = this.getDiagonalLetters(board, row, col, 'bottomToTop');
 
         // Use the actual positions from getDiagonalLetters for accuracy
         for (let i = 0; i < wordObj.word.length; i++) {
@@ -316,10 +336,10 @@ export class WordValidator {
         ({ letters, positions } = this.getRowLetters(board, row));
         break;
       case 'mainDiag':
-        ({ letters, positions } = this.getDiagonalLetters(board, row, col, 'main'));
+        ({ letters, positions } = this.getDiagonalLetters(board, row, col, 'topToBottom'));
         break;
       case 'antiDiag':
-        ({ letters, positions } = this.getDiagonalLetters(board, row, col, 'anti'));
+        ({ letters, positions } = this.getDiagonalLetters(board, row, col, 'bottomToTop'));
         break;
     }
     const foundWords = this.findValidWordsInString(letters);

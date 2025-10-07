@@ -74,15 +74,15 @@ describe('WordValidator Letter Collection Methods', () => {
   });
 
   describe('getDiagonalLetters', () => {
-    describe('main diagonal (top-left to bottom-right)', () => {
-      it('should collect letters from main diagonal starting from top-left corner', () => {
+    describe('topToBottom diagonal (top-left to bottom-right)', () => {
+      it('should collect letters from topToBottom diagonal starting from top-left corner', () => {
         // Set up main diagonal from (0,0)
         board.setTileContent(0, 0, 'M');
         board.setTileContent(1, 1, 'A');
         board.setTileContent(2, 2, 'I');
         board.setTileContent(3, 3, 'N');
 
-        const result = validator.getDiagonalLetters(board, 0, 0, 'main');
+        const result = validator.getDiagonalLetters(board, 0, 0, 'topToBottom');
 
         expect(result.letters).toBe('MAIN  '); // 4  letters + 2 spaces
         expect(result.positions).toHaveLength(6);
@@ -98,30 +98,30 @@ describe('WordValidator Letter Collection Methods', () => {
         board.setTileContent(1, 2, 'U');
         board.setTileContent(2, 3, 'N');
 
-        const result = validator.getDiagonalLetters(board, 1, 2, 'main');
-        const result2 = validator.getDiagonalLetters(board, 2, 3, 'main');
+        const result = validator.getDiagonalLetters(board, 1, 2, 'topToBottom');
+        const result2 = validator.getDiagonalLetters(board, 2, 3, 'topToBottom');
 
         expect(result.letters).toBe(result2.letters);
         expect(result.positions).toEqual(result2.positions);
       });
 
-      it('should handle empty main diagonal', () => {
-        const result = validator.getDiagonalLetters(board, 0, 0, 'main');
+      it('should handle empty topToBottom diagonal', () => {
+        const result = validator.getDiagonalLetters(board, 0, 0, 'topToBottom');
 
         expect(result.letters).toBe('      '); // All spaces
         expect(result.positions).toHaveLength(6);
       });
     });
 
-    describe('anti diagonal (top-right to bottom-left)', () => {
-      it('should collect letters from anti diagonal with "ANTI" pattern', () => {
+    describe('bottomToTop diagonal (bottom-left to top-right)', () => {
+      it('should collect letters from bottomToTop diagonal with "ANTI" pattern', () => {
         // Set up anti diagonal from (0,6) going down-left
         board.setTileContent(3, 3, 'A');
         board.setTileContent(2, 4, 'N');
         board.setTileContent(1, 5, 'T');
         board.setTileContent(0, 6, 'I');
 
-        const result = validator.getDiagonalLetters(board, 0, 6, 'anti');
+        const result = validator.getDiagonalLetters(board, 0, 6, 'bottomToTop');
 
         expect(result.letters).toBe('  ANTI'); // 4 letters + 3 spaces
         expect(result.positions).toHaveLength(6);
@@ -133,14 +133,14 @@ describe('WordValidator Letter Collection Methods', () => {
         expect(result.positions[5]).toEqual([0, 6]);
       });
 
-      it('should find anti diagonal regardless of which positions are called', () => {
+      it('should find bottomToTop diagonal regardless of which positions are called', () => {
         // Set up anti diagonal and call from middle
         board.setTileContent(4, 3, 'F');
         board.setTileContent(3, 4, 'U');
         board.setTileContent(2, 5, 'N');
 
-        const result = validator.getDiagonalLetters(board, 3, 4, 'anti');
-        const result2 = validator.getDiagonalLetters(board, 5, 2, 'anti');
+        const result = validator.getDiagonalLetters(board, 3, 4, 'bottomToTop');
+        const result2 = validator.getDiagonalLetters(board, 5, 2, 'bottomToTop');
 
         expect(result.letters).toBe(result2.letters);
         expect(result.positions).toEqual(result2.positions);
@@ -153,8 +153,8 @@ describe('WordValidator Letter Collection Methods', () => {
         expect(result.positions[4]).toEqual([1, 6]);
       });
 
-      it('should handle empty anti diagonal', () => {
-        const result = validator.getDiagonalLetters(board, 0, 6, 'anti');
+      it('should handle empty bottomToTop diagonal', () => {
+        const result = validator.getDiagonalLetters(board, 0, 6, 'bottomToTop');
 
         expect(result.letters).toBe('      '); // All spaces
         expect(result.positions).toHaveLength(6);
@@ -165,7 +165,7 @@ describe('WordValidator Letter Collection Methods', () => {
       it('should handle diagonal with only one tile', () => {
         board.setTileContent(5, 6, 'X');
 
-        const result = validator.getDiagonalLetters(board, 5, 6, 'anti');
+        const result = validator.getDiagonalLetters(board, 5, 6, 'bottomToTop');
 
         expect(result.letters).toBe('X');
         expect(result.positions).toHaveLength(1);
@@ -179,7 +179,7 @@ describe('WordValidator Letter Collection Methods', () => {
         board.setTileContent(3, 5, 'G');
         board.setTileContent(5, 3, 'E');
 
-        const result = validator.getDiagonalLetters(board, 2, 6, 'anti');
+        const result = validator.getDiagonalLetters(board, 2, 6, 'bottomToTop');
 
         expect(result.letters).toBe('EDGE');
         expect(result.positions).toHaveLength(4);
@@ -192,7 +192,7 @@ describe('WordValidator Letter Collection Methods', () => {
         board.setTileContent(2, 2, 'S');
         board.setTileContent(3, 3, 'T');
 
-        const result = validator.getDiagonalLetters(board, 0, 0, 'main');
+        const result = validator.getDiagonalLetters(board, 0, 0, 'topToBottom');
 
         expect(result.letters).toBe('T ST  '); // T, space, S, T, 3 spaces
         expect(result.positions[0]).toEqual([0, 0]);
