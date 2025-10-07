@@ -6,14 +6,9 @@ export function createSpawnRow(cols = 7) {
     const spawnRowContainer = document.getElementById('spawn-row');
     spawnRowContainer.innerHTML = ''; // Clear any previous spawn row
 
-    // Set up CSS grid styles to match game board
-    spawnRowContainer.style.display = 'grid';
+    // Set dynamic grid template columns and rows
     spawnRowContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
     spawnRowContainer.style.gridTemplateRows = '1fr';
-    spawnRowContainer.style.width = '100%';
-    spawnRowContainer.style.maxWidth = '420px'; // Match game board width
-    spawnRowContainer.style.margin = '0 auto';
-    spawnRowContainer.style.gap = '0';
 
     for (let col = 0; col < cols; col++) {
         const spawnTile = document.createElement('div');
