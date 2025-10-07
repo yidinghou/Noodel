@@ -80,7 +80,7 @@ export class GameBoard {
         }
 
         // Finalize tile at endRow
-        this.setTileClass(endRow, col, '');
+        this.setTileClass(endRow, col, 'locked');
     }
 
     countTilesPerColumn(col) {

@@ -31,3 +31,15 @@
     box-shadow: 0 0 0 1px #444 inset;
     border: none;
 }
+
+/* Falling tile animation style */
+.tile.falling {
+    background: lightblue;
+    transition: background 0.1s ease;
+}
+
+/* Locked tile style - gray background with white text */
+.tile.locked {
+    background: #6c757d;
+    color: white;
+}
