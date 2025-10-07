@@ -163,4 +163,54 @@ export class WordValidator {
 
     return segments;
   }
+
+  /**
+   * Checks for valid words in all directions from a given position on the board
+   * @param {number} row - The row position to check from
+   * @param {number} col - The column position to check from
+   * @param {Object} board - The game board object
+   * @returns {Array} Array of found word objects with {letters, positions, direction}
+   */
+  checkForWords(row, col, board) {
+    const directions = [
+      { name: 'row', getter: () => this.getRowLetters(board, row) },
+      { name: 'column', getter: () => this.getColumnLetters(board, col) },
+      { name: 'diagonalTB', getter: () => this.getDiagonalLetters(board, row, col, 'topToBottom') },
+      { name: 'diagonalBT', getter: () => this.getDiagonalLetters(board, row, col, 'bottomToTop') }
+    ];
+
+    return directions.flatMap(direction => 
+      this._checkDirectionForWords(direction.getter(), direction.name)
+    );
+  }
+
+  /**
+   * Helper: Checks a single direction for valid words
+   * @param {Object} letterData - Object with {letters, positions}
+   * @param {string} directionName - Name of the direction being checked
+   * @returns {Array} Array of found words in this direction
+   * @private
+   */
+  _checkDirectionForWords(letterData, directionName) {
+    const { letters, positions } = letterData;
+    const segments = this.extractContinuousSegments(letters, positions);
+    
+    return segments
+      .filter(segment => this._isValidWordSegment(segment))
+      .map(segment => ({
+        ...segment,
+        direction: directionName
+      }));
+  }
+
+  /**
+   * Helper: Validates if a segment is a valid word
+   * @param {Object} segment - Segment with {letters, positions}
+   * @returns {boolean} True if segment is a valid word
+   * @private
+   */
+  _isValidWordSegment(segment) {
+    return segment.letters.length >= this.minWordLength &&
+           this.dictionary.hasWord(segment.letters.toLowerCase());
+  }
 }

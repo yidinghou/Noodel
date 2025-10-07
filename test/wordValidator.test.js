@@ -337,4 +337,231 @@ describe('WordValidator Letter Collection Methods', () => {
       expect(result[1].positions).toEqual([[4,4], [5,5], [6,6]]);
     });
   });
+
+  describe('checkForWords', () => {
+    beforeEach(() => {
+      // Mock dictionary with test words
+      validator.dictionary.validWords = ['cat', 'dog', 'hat', 'car', 'art', 'tar'];
+      validator.dictionary.hasWord = (word) => validator.dictionary.validWords.includes(word.toLowerCase());
+    });
+
+    it('should find word in row direction', () => {
+      // Set up horizontal word "CAT"
+      board.setTileContent(2, 1, 'C');
+      board.setTileContent(2, 2, 'A');
+      board.setTileContent(2, 3, 'T');
+
+      const result = validator.checkForWords(2, 2, board);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].letters).toBe('CAT');
+      expect(result[0].direction).toBe('row');
+      expect(result[0].positions).toEqual([[2,1], [2,2], [2,3]]);
+    });
+
+    it('should find word in column direction', () => {
+      // Set up vertical word "DOG"
+      board.setTileContent(1, 3, 'D');
+      board.setTileContent(2, 3, 'O');
+      board.setTileContent(3, 3, 'G');
+
+      const result = validator.checkForWords(2, 3, board);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].letters).toBe('DOG');
+      expect(result[0].direction).toBe('column');
+      expect(result[0].positions).toEqual([[1,3], [2,3], [3,3]]);
+    });
+
+    it('should find word in topToBottom diagonal', () => {
+      // Set up diagonal word "HAT"
+      board.setTileContent(0, 0, 'H');
+      board.setTileContent(1, 1, 'A');
+      board.setTileContent(2, 2, 'T');
+
+      const result = validator.checkForWords(1, 1, board);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].letters).toBe('HAT');
+      expect(result[0].direction).toBe('diagonalTB');
+      expect(result[0].positions).toEqual([[0,0], [1,1], [2,2]]);
+    });
+
+    it('should find word in bottomToTop diagonal', () => {
+      // Set up anti-diagonal word "CAR"
+      board.setTileContent(3, 2, 'C');
+      board.setTileContent(2, 3, 'A');
+      board.setTileContent(1, 4, 'R');
+
+      const result = validator.checkForWords(2, 3, board);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].letters).toBe('CAR');
+      expect(result[0].direction).toBe('diagonalBT');
+      expect(result[0].positions).toEqual([[3,2], [2,3], [1,4]]);
+    });
+
+    it('should find multiple words in different directions with shared letter', () => {
+      // Set up intersecting words: "CAT" horizontal and "ART" vertical sharing 'A'
+      board.setTileContent(2, 1, 'C');
+      board.setTileContent(2, 2, 'A');  // Shared letter between both words
+      board.setTileContent(2, 3, 'T');
+      
+      // Complete the vertical "ART" word with 'A' already placed at [2,2]
+      board.setTileContent(3, 2, 'R');
+      board.setTileContent(4, 2, 'T');
+
+      const result = validator.checkForWords(2, 2, board);
+
+      expect(result).toHaveLength(2);
+      
+      const catWord = result.find(w => w.letters === 'CAT');
+      const artWord = result.find(w => w.letters === 'ART');
+      
+      expect(catWord).toBeTruthy();
+      expect(catWord.direction).toBe('row');
+      expect(catWord.positions).toEqual([[2,1], [2,2], [2,3]]);
+      
+      expect(artWord).toBeTruthy();
+      expect(artWord.direction).toBe('column');
+      expect(artWord.positions).toEqual([[2,2], [3,2], [4,2]]);
+    });
+
+    it('should handle words with gaps (spaces between letters)', () => {
+      // Set up "CAT" with gap: "C A T"
+      board.setTileContent(2, 0, 'C');
+      // Skip position [2,1] - empty space
+      board.setTileContent(2, 2, 'A');
+      board.setTileContent(2, 3, 'T');
+
+      const result = validator.checkForWords(2, 2, board);
+
+      // Should find individual letters or shorter segments, but not "CAT" due to gap
+      const catWord = result.find(w => w.letters === 'CAT');
+      expect(catWord).toBeFalsy(); // Should not find "CAT" with gaps
+    });
+
+    it('should respect minimum word length', () => {
+      // Set up 2-letter combinations
+      board.setTileContent(1, 1, 'A');
+      board.setTileContent(1, 2, 'T');
+
+      const result = validator.checkForWords(1, 1, board);
+
+      // Should not find "AT" since minWordLength is 3
+      expect(result).toHaveLength(0);
+    });
+
+    it('should find words that dont start at the checked position', () => {
+      // Set up "DOG" where we check from the middle letter 'O'
+      board.setTileContent(3, 0, 'D');
+      board.setTileContent(3, 1, 'O');
+      board.setTileContent(3, 2, 'G');
+
+      const result = validator.checkForWords(3, 1, board); // Check from 'O'
+
+      expect(result).toHaveLength(1);
+      expect(result[0].letters).toBe('DOG');
+      expect(result[0].positions).toEqual([[3,0], [3,1], [3,2]]);
+    });
+
+    it('should return empty array when no words found', () => {
+      // Set up random letters that dont form words
+      board.setTileContent(0, 0, 'X');
+      board.setTileContent(0, 1, 'Y');
+      board.setTileContent(1, 0, 'Z');
+
+      const result = validator.checkForWords(0, 0, board);
+
+      expect(result).toHaveLength(0);
+    });
+
+    it('should handle empty board position', () => {
+      // Check from an empty position
+      const result = validator.checkForWords(2, 2, board);
+
+      expect(result).toHaveLength(0);
+    });
+
+    it('should find multiple words in same direction', () => {
+      // Set up two words in same row: "CAT DOG"
+      board.setTileContent(2, 0, 'C');
+      board.setTileContent(2, 1, 'A');
+      board.setTileContent(2, 2, 'T');
+      // Gap at [2,3]
+      board.setTileContent(2, 4, 'D');
+      board.setTileContent(2, 5, 'O');
+      board.setTileContent(2, 6, 'G');
+
+      const result = validator.checkForWords(2, 2, board);
+
+      expect(result).toHaveLength(2);
+      expect(result.some(w => w.letters === 'CAT')).toBe(true);
+      expect(result.some(w => w.letters === 'DOG')).toBe(true);
+    });
+
+    it('should handle board edge cases', () => {
+      // Test from corner position
+      board.setTileContent(0, 0, 'C');
+      board.setTileContent(0, 1, 'A');
+      board.setTileContent(0, 2, 'T');
+
+      const result = validator.checkForWords(0, 0, board);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].letters).toBe('CAT');
+      expect(result[0].direction).toBe('row');
+    });
+
+    it('should handle case insensitive word matching', () => {
+      // Set up word with mixed case
+      board.setTileContent(1, 0, 'c');
+      board.setTileContent(1, 1, 'A');
+      board.setTileContent(1, 2, 't');
+
+      const result = validator.checkForWords(1, 1, board);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].letters).toBe('cAt'); // Preserves original case
+    });
+  });
+
+  describe('_isValidWordSegment', () => {
+    beforeEach(() => {
+      validator.dictionary.validWords = ['cat', 'dog', 'at'];
+      validator.dictionary.hasWord = (word) => validator.dictionary.validWords.includes(word.toLowerCase());
+    });
+
+    it('should return true for valid word of minimum length', () => {
+      const segment = { letters: 'cat', positions: [[0,0], [0,1], [0,2]] };
+      
+      const result = validator._isValidWordSegment(segment);
+      
+      expect(result).toBe(true);
+    });
+
+    it('should return false for word shorter than minimum length', () => {
+      const segment = { letters: 'at', positions: [[0,0], [0,1]] };
+      
+      const result = validator._isValidWordSegment(segment);
+      
+      expect(result).toBe(false); // Too short (< minWordLength)
+    });
+
+    it('should return false for invalid word', () => {
+      const segment = { letters: 'xyz', positions: [[0,0], [0,1], [0,2]] };
+      
+      const result = validator._isValidWordSegment(segment);
+      
+      expect(result).toBe(false); // Not in dictionary
+    });
+
+    it('should handle case insensitive validation', () => {
+      const segment = { letters: 'CAT', positions: [[0,0], [0,1], [0,2]] };
+      
+      const result = validator._isValidWordSegment(segment);
+      
+      expect(result).toBe(true); // Should match 'cat' in dictionary
+    });
+  });
 });
