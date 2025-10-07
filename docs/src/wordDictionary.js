@@ -50,9 +50,11 @@ export class WordDictionary {
           
           const word = wordRaw.trim();
           const definition = defRaw?.replace(/[\r\n]/g, '<br>') || 'Definition not found';
-
-          this.validWords.push(word);
-          this.wordDefinitions[word] = definition;
+          
+          if (this._isValidWord(word)) {
+            this.validWords.push(word);
+            this.wordDefinitions[word] = definition;
+          }
         }
       }
       
@@ -71,4 +73,32 @@ export class WordDictionary {
     return this.wordDefinitions[word] || 'Definition not found';
   }
 
+  /**
+   * Checks if a word exists in the dictionary
+   * @param {string} word - The word to check
+   * @returns {boolean}
+   */
+  hasWord(word) {
+    return this.validWords.includes(word.toLowerCase());
+  }
+
+  /**
+   * Gets the total number of loaded words
+   * @returns {number}
+   */
+  getWordCount() {
+    return this.validWords.length;
+  }
+
+  /**
+   * Validates if a word meets the criteria
+   * @param {string} word - The word to validate
+   * @returns {boolean}
+   * @private
+   */
+  _isValidWord(word) {
+    return word.length >= 3 && 
+           word.length <= 8 && 
+           /^[a-z]+$/.test(word);
+  }
 }
