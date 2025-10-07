@@ -12,43 +12,36 @@ describe('GameBoard', () => {
   });
 
   describe('countTilesPerColumn', () => {
-    it('should return all zeros for an empty board', () => {
-      const counts = board.countTilesPerColumn();
-      expect(counts).toEqual([0, 0, 0, 0, 0, 0, 0]);
+    it('should return 0 for an empty column', () => {
+      const count = board.countTilesPerColumn(0);
+      expect(count).toBe(0);
     });
 
-    it('should count tiles in columns correctly', () => {
+    it('should count tiles in a specific column correctly', () => {
       board.setTileContent(0, 0, 'A');
       board.setTileContent(1, 0, 'B');
       board.setTileContent(0, 1, 'C');
       
-      const counts = board.countTilesPerColumn();
-      expect(counts).toEqual([2, 1, 0, 0, 0, 0, 0]);
+      expect(board.countTilesPerColumn(0)).toBe(2);
+      expect(board.countTilesPerColumn(1)).toBe(1);
+      expect(board.countTilesPerColumn(2)).toBe(0);
     });
 
     it('should ignore empty tiles', () => {
       board.setTileContent(0, 2, '   ');
       board.setTileContent(1, 2, '');
       
-      const counts = board.countTilesPerColumn();
-      expect(counts).toEqual([0, 0, 0, 0, 0, 0, 0]);
+      const count = board.countTilesPerColumn(2);
+      expect(count).toBe(0);
     });
 
-    it('should count multiple tiles in multiple columns', () => {
+    it('should count multiple tiles in a column', () => {
       // Column 0: 3 tiles
       board.setTileContent(3, 0, 'A');
       board.setTileContent(4, 0, 'B');
       board.setTileContent(5, 0, 'C');
       
-      // Column 2: 2 tiles
-      board.setTileContent(4, 2, 'D');
-      board.setTileContent(5, 2, 'E');
-      
-      // Column 6: 1 tile
-      board.setTileContent(5, 6, 'F');
-      
-      const counts = board.countTilesPerColumn();
-      expect(counts).toEqual([3, 0, 2, 0, 0, 0, 1]);
+      expect(board.countTilesPerColumn(0)).toBe(3);
     });
 
     it('should handle a full column', () => {
@@ -57,8 +50,20 @@ describe('GameBoard', () => {
         board.setTileContent(row, 3, 'X');
       }
       
-      const counts = board.countTilesPerColumn();
-      expect(counts).toEqual([0, 0, 0, 6, 0, 0, 0]);
+      expect(board.countTilesPerColumn(3)).toBe(6);
+    });
+
+    it('should count tiles independently for each column', () => {
+      // Column 2: 2 tiles
+      board.setTileContent(4, 2, 'D');
+      board.setTileContent(5, 2, 'E');
+      
+      // Column 6: 1 tile
+      board.setTileContent(5, 6, 'F');
+      
+      expect(board.countTilesPerColumn(2)).toBe(2);
+      expect(board.countTilesPerColumn(6)).toBe(1);
+      expect(board.countTilesPerColumn(4)).toBe(0);
     });
   });
 });
