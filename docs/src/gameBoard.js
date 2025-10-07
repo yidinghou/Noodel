@@ -55,4 +55,46 @@ export class GameBoard {
             }
         }
     }
+
+        /**
+     * Animates a tile dropping from startRow to endRow in the given column.
+     * @param {number} col - The column to drop the tile in.
+     * @param {number} startRow - The row to start dropping from.
+     * @param {number} endRow - The row to end dropping at (lowest empty).
+     * @param {string} content - The content to drop.
+     * @param {number} [delay=80] - Delay in ms between steps.
+     * @returns {Promise<void>}
+     */
+    async animateTileDrop(col, startRow, endRow, content, delay = 80) {
+        let currentRow = startRow;
+        this.setTileContent(currentRow, col, content);
+        this.setTileClass(currentRow, col, 'falling');
+
+        while (currentRow < endRow) {
+            await new Promise(res => setTimeout(res, delay));
+            this.clearTile(currentRow, col);
+            this.setTileClass(currentRow, col, '');
+            currentRow++;
+            this.setTileContent(currentRow, col, content);
+            this.setTileClass(currentRow, col, 'falling');
+        }
+
+        // Finalize tile at endRow
+        this.setTileClass(endRow, col, '');
+    }
+
+    countTilesPerColumn() {
+        const counts = Array(this.cols).fill(0);
+        // if the tile.textContent is not empty, count it
+        for (let col = 0; col < this.cols; col++) {
+            for (let row = 0; row < this.rows; row++) {
+                const tile = this.getTileElement(row, col);
+                if (tile && tile.textContent.trim() !== '') {
+                    counts[col]++;
+                }
+            }
+        }
+
+        return counts;
+    }
 }

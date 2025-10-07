@@ -2,7 +2,7 @@ import { createGameBoard, GameBoard } from './gameBoard.js';
 
 export class Game {
     constructor(boardId, rows, cols) {
-        this.boardId = boardId;
+        this.boardId = boardId; // ID of the game board container
         this.rows = rows;
         this.cols = cols;
         this.gameBoard = null;
