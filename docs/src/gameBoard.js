@@ -57,21 +57,59 @@ export class GameBoard {
   }
 
   /**
-   * Animates a tile dropping from startRow to endRow in the given column.
-   * @param {number} col - The column to drop the tile in.
-   * @param {number} startRow - The row to start dropping from.
-   * @param {number} endRow - The row to end dropping at (lowest empty).
-   * @param {string} content - The content to drop.
-   * @param {number} [delay=80] - Delay in ms between steps.
+   * Applies gravity to a specific column, making all tiles fall down.
+   * @param {number} col - Column to apply gravity to
+   * @param {number} [delay=60] - Animation delay between steps
    * @returns {Promise<void>}
    */
-  async animateTileFall(col, startRow, endRow, content, delay = 80) {
+  async applyGravityToColumn(col, delay = 60) {
+    // Collect non-empty tiles from top to bottom
+    const tiles = [];
+    for (let row = 0; row < this.rows; row++) {
+      const tile = this.getTileElement(row, col);
+      if (tile?.textContent.trim()) {
+        tiles.push({ content: tile.textContent, from: row });
+        this.clearTile(row, col);
+        this.setTileClass(row, col, '');
+      }
+    }
+
+    // Animate tiles falling to bottom positions
+    for (let i = 0; i < tiles.length; i++) {
+      const targetRow = this.rows - 1 - i;
+      const tileData = tiles[tiles.length - 1 - i]; // Bottom-up order
+      
+      if (tileData.from !== targetRow) {
+        await this._animateDrop(col, tileData.from, targetRow, tileData.content, delay);
+      } else {
+        this.setTileContent(targetRow, col, tileData.content);
+        this.setTileClass(targetRow, col, 'locked');
+      }
+    }
+  }
+
+  /**
+   * Applies gravity to entire board or specific columns.
+   * @param {Array<number>} [columns] - Specific columns to apply gravity to
+   * @param {number} [delay=60] - Animation delay
+   * @returns {Promise<void>}
+   */
+  async applyGravity(columns = null, delay = 60) {
+    const targetCols = columns || Array.from({length: this.cols}, (_, i) => i);
+    await Promise.all(targetCols.map(col => this.applyGravityToColumn(col, delay)));
+  }
+
+  /**
+   * Helper: Animates single tile drop
+   * @private
+   */
+  async _animateDrop(col, startRow, endRow, content, delay) {
     let currentRow = startRow;
     this.setTileContent(currentRow, col, content);
     this.setTileClass(currentRow, col, 'falling');
 
     while (currentRow < endRow) {
-      await new Promise((res) => setTimeout(res, delay));
+      await new Promise(res => setTimeout(res, delay));
       this.clearTile(currentRow, col);
       this.setTileClass(currentRow, col, '');
       currentRow++;
@@ -79,7 +117,6 @@ export class GameBoard {
       this.setTileClass(currentRow, col, 'falling');
     }
 
-    // Finalize tile at endRow
     this.setTileClass(endRow, col, 'locked');
   }
 
@@ -95,4 +132,37 @@ export class GameBoard {
 
     return count;
   }
+  
+  /**
+   * Animates a found word: highlights, shakes, clears, and applies gravity.
+   * @param {Array} positions - Array of [row, col] pairs for word tiles
+   * @param {number} [duration=600] - Word animation duration
+   * @param {boolean} [useGravity=true] - Apply gravity after clearing
+   * @returns {Promise<void>}
+   */
+  async animateWordFound(positions, duration = 600, useGravity = true) {
+    // Highlight and shake tiles
+    positions.forEach(([row, col]) => {
+      const tile = this.getTileElement(row, col);
+      if (tile) tile.classList.add('highlight', 'shake');
+    });
+
+    await new Promise(res => setTimeout(res, duration));
+
+    // Get affected columns before clearing
+    const affectedCols = [...new Set(positions.map(([, col]) => col))];
+    
+    // Clear tiles
+    positions.forEach(([row, col]) => {
+      this.clearTile(row, col);
+      this.setTileClass(row, col, '');      
+    });
+
+    // Apply gravity to affected columns only
+    if (useGravity) {
+      await this.applyGravity(affectedCols);
+    }
+  }
+
+
 }
