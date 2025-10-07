@@ -1,23 +1,23 @@
-import { createGameBoard, GameState } from './gameBoard.js';
+import { createGameBoard, GameBoard } from './gameBoard.js';
 
 export class Game {
     constructor(boardId, rows, cols) {
         this.boardId = boardId;
         this.rows = rows;
         this.cols = cols;
-        this.gameState = null;
+        this.gameBoard = null;
         this.gameBoardElement = null;
     }
 
     init() {
         createGameBoard();
-        this.gameState = new GameState(this.boardId, this.rows, this.cols);
+        this.gameBoard = new GameBoard(this.boardId, this.rows, this.cols);
         this.gameBoardElement = document.getElementById(this.boardId);
 
         this.setupEventListeners();
 
         // Example initial state
-        this.gameState.setTileContent(2, 3, 'A');
+        this.gameBoard.setTileContent(2, 3, 'A');
         console.log('Game initialized.');
     }
 
@@ -36,7 +36,7 @@ export class Game {
 
             // Example: Update the clicked tile with a new letter
             const newLetter = 'B'; // Replace with your logic
-            this.gameState.setTileContent(row, col, newLetter);
+            this.gameBoard.setTileContent(row, col, newLetter);
             console.log(`Clicked on tile at row: ${row}, col: ${col}`);
         }
     }

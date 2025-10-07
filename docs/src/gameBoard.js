@@ -21,7 +21,7 @@ export function createGameBoard(rows = 6, cols = 7) {
     }
 }
 
-export class GameState {
+export class GameBoard {
     constructor(boardContainerId = 'game-board', rows = 6, cols = 7) {
         this.boardContainer = document.getElementById(boardContainerId);
         this.rows = rows;
