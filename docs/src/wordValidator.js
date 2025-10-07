@@ -109,4 +109,58 @@ export class WordValidator {
 
     return positions;
   }
+
+  /**
+   * Extracts continuous letter segments from a string with spaces
+   * @param {string} letters - String containing letters and spaces
+   * @param {Array} positions - Array of position coordinates [row, col]
+   * @returns {Array} Array of objects with {letters, positions} for each continuous segment
+   * 
+   * @example
+   * extractContinuousSegments('HAT  ', [[0,0], [0,1], [0,2], [0,3], [0,4]])
+   * // Returns: [{letters: 'HAT', positions: [[0,0], [0,1], [0,2]]}]
+   * 
+   * extractContinuousSegments('HAT CAT', [[0,0], [0,1], [0,2], [0,3], [0,4], [0,5], [0,6]])
+   * // Returns: [
+   * //   {letters: 'HAT', positions: [[0,0], [0,1], [0,2]]},
+   * //   {letters: 'CAT', positions: [[0,4], [0,5], [0,6]]}
+   * // ]
+   */
+  extractContinuousSegments(letters, positions) {
+    const segments = [];
+    let currentSegment = '';
+    let currentPositions = [];
+
+    for (let i = 0; i < letters.length; i++) {
+      const char = letters[i];
+      
+      if (char !== ' ') {
+        // Add letter to current segment
+        currentSegment += char;
+        currentPositions.push(positions[i]);
+      } else {
+        // Space found - finalize current segment if it has content
+        if (currentSegment.length > 0) {
+          segments.push({
+            letters: currentSegment,
+            positions: [...currentPositions]
+          });
+          
+          // Reset for next segment
+          currentSegment = '';
+          currentPositions = [];
+        }
+      }
+    }
+
+    // Don't forget the last segment if string doesn't end with space
+    if (currentSegment.length > 0) {
+      segments.push({
+        letters: currentSegment,
+        positions: [...currentPositions]
+      });
+    }
+
+    return segments;
+  }
 }
