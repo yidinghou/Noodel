@@ -524,6 +524,66 @@ describe('WordValidator Letter Collection Methods', () => {
       expect(result).toHaveLength(1);
       expect(result[0].letters).toBe('cAt'); // Preserves original case
     });
+
+    it('should find words starting from left edge (column 0)', () => {
+      // Set up word "DOG" starting from column 0
+      board.setTileContent(3, 0, 'D');
+      board.setTileContent(3, 1, 'O');
+      board.setTileContent(3, 2, 'G');
+
+      const result = validator.checkForWords(3, 0, board); // Check from the first letter at column 0
+
+      expect(result).toHaveLength(1);
+      expect(result[0].letters).toBe('DOG');
+      expect(result[0].direction).toBe('row');
+      expect(result[0].positions).toEqual([[3,0], [3,1], [3,2]]);
+    });
+
+    it('should find words from left edge when checking from any position in the word', () => {
+      // Set up word "TAR" starting from column 0
+      board.setTileContent(4, 0, 'T');
+      board.setTileContent(4, 1, 'A');
+      board.setTileContent(4, 2, 'R');
+
+      // Check from middle letter 'A' at column 1
+      const result1 = validator.checkForWords(4, 1, board);
+      // Check from last letter 'R' at column 2
+      const result2 = validator.checkForWords(4, 2, board);
+
+      // Both should find the same word starting from column 0
+      expect(result1).toHaveLength(1);
+      expect(result1[0].letters).toBe('TAR');
+      expect(result1[0].positions).toEqual([[4,0], [4,1], [4,2]]);
+
+      expect(result2).toHaveLength(1);
+      expect(result2[0].letters).toBe('TAR');
+      expect(result2[0].positions).toEqual([[4,0], [4,1], [4,2]]);
+    });
+
+    it('should find multiple words when one starts from left edge', () => {
+      // Set up "CAT" starting from column 0 and "ART" vertically sharing the 'A'
+      board.setTileContent(2, 0, 'C'); // Left edge
+      board.setTileContent(2, 1, 'A'); // Shared letter
+      board.setTileContent(2, 2, 'T');
+      
+      // Complete vertical "ART" word
+      board.setTileContent(3, 1, 'R');
+      board.setTileContent(4, 1, 'T');
+
+      const result = validator.checkForWords(2, 1, board); // Check from shared 'A'
+
+      expect(result).toHaveLength(2);
+      
+      const catWord = result.find(w => w.letters === 'CAT');
+      const artWord = result.find(w => w.letters === 'ART');
+      
+      expect(catWord).toBeTruthy();
+      expect(catWord.direction).toBe('row');
+      expect(catWord.positions[0]).toEqual([2, 0]); // Starts from column 0
+      
+      expect(artWord).toBeTruthy();
+      expect(artWord.direction).toBe('column');
+    });
   });
 
   describe('_isValidWordSegment', () => {
