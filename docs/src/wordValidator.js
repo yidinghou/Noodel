@@ -80,18 +80,12 @@ export class WordValidator {
    * Collects letters from a specific column, substituting empty tiles with spaces.
    */
   getColumnLetters(board, col) {
-    let letters = '';
-    const positions = [];
-
-    for (let r = 0; r < board.rows; r++) {
+    const letters = Array.from({ length: board.rows }, (_, r) => {
       const tile = board.getTileElement(r, col);
-      if (tile && tile.textContent) {
-        letters += tile.textContent;
-      } else {
-        letters += ' '; // Add space for empty/null tiles
-      }
-      positions.push([r, col]);
-    }
+      return tile?.textContent || ' ';
+    }).join('');
+    
+    const positions = Array.from({ length: board.rows }, (_, r) => [r, col]);
     return this.filterSpacesAndPositions(letters, positions);
   }
 
@@ -99,24 +93,18 @@ export class WordValidator {
    * Collects letters from a specific row, substituting empty tiles with spaces.
    */
   getRowLetters(board, row) {
-    let letters = '';
-    const positions = [];
-
-    for (let c = 0; c < board.cols; c++) {
+    const letters = Array.from({ length: board.cols }, (_, c) => {
       const tile = board.getTileElement(row, c);
-      if (tile && tile.textContent) {
-        letters += tile.textContent;
-      } else {
-        letters += ' '; // Add space for empty/null tiles
-      }
-      positions.push([row, c]);
-    }
+      return tile?.textContent || ' ';
+    }).join('');
+    
+    const positions = Array.from({ length: board.cols }, (_, c) => [row, c]);
     return this.filterSpacesAndPositions(letters, positions);
   }
 
   /**
    * Collects letters along a diagonal, substituting empty tiles with spaces.
-   * @param {string} direction - 'main' for top-left to bottom-right, 'anti' for top-right to bottom-left.
+   * @param {string} direction - 'main' for top-left to bottom-right, 'anti' for bottom-left to top-right.
    */
   getDiagonalLetters(board, startRow, startCol, direction = 'main') {
     let letters = '';
