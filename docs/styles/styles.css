@@ -50,7 +50,8 @@
   max-width: 420px; /* Match game board width */
   aspect-ratio: 7 / 1;
   margin: 0 auto;
-  gap: 0;
+  gap: 0px;
+  border: none; /* Make spawn row border invisible */
 }
 
 .spawn-tile {
@@ -64,19 +65,17 @@
   font-size: clamp(1rem, 4vw, 1.5rem);
   min-height: 35px;
   min-width: 35px;
-  border: 1px dashed rgba(68, 68, 68, 0.2); /* Default subtle border */
-  opacity: 0.5; /* Semi-transparent */
 }
 
 /* Spawn row inactive: invisible border */
 .spawn-tile.inactive {
-  border: 1px solid transparent !important;
+  border: 1px solid transparent;
   opacity: 0.2;
 }
 
 /* Spawn row active: bold border */
 .spawn-tile.active {
-  border: 3px solid #222 !important;
+  border: 3px solid #222;
   opacity: 1;
 }
 
