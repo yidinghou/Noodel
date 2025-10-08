@@ -4,6 +4,7 @@
  */
 
 import { WordDictionary } from "./wordDictionary.js";
+
 export class WordValidator {
   /**
    * @param {number} minWordLength - The minimum required length for a valid word (default 3).
@@ -188,9 +189,11 @@ export class WordValidator {
       { name: 'diagonalBT', getter: () => this.getDiagonalLetters(board, row, col, 'bottomToTop') }
     ];
 
-    return directions.flatMap(direction => 
+    const allWordsAndPositions = directions.flatMap(direction => 
       this._checkDirectionForWords(direction.getter(), direction.name)
     );
+
+    return allWordsAndPositions;
   }
 
   /**
@@ -205,14 +208,14 @@ export class WordValidator {
     const segments = this.extractContinuousSegments(letters, positions);
     
     // Find all valid words in each segment and combine them
-    const result = segments.flatMap(segment => 
-      this._findValidWordsInSegment(segment).map(word => ({
-        ...word,
+    const wordsAndPositions = segments.flatMap(segment => 
+      this._findValidWordsInSegment(segment).map(wordObject => ({
+        ...wordObject,
         direction: directionName
       }))
     );
 
-    return result;
+    return wordsAndPositions;
   }
 
   /**
@@ -221,29 +224,62 @@ export class WordValidator {
    * @returns {Array} Array of valid words found in the segment
    * @private
    */
-  _findValidWordsInSegment(segment) {
+    _findValidWordsInSegment(segment) {
     const { letters, positions } = segment;
-    const validWords = [];
+    const validWordsAndPositions = [];
     const segmentLength = letters.length;
     
     // Check all possible substrings of sufficient length
     for (let wordLength = this.minWordLength; wordLength <= segmentLength; wordLength++) {
       // Check each possible starting position for words of this length
       for (let startIdx = 0; startIdx <= segmentLength - wordLength; startIdx++) {
-        const word = letters.substring(startIdx, startIdx + wordLength);
+        const wordString = letters.substring(startIdx, startIdx + wordLength);
         
-        if (this.dictionary.hasWord(word.toLowerCase())) {
+        if (this.dictionary.hasWord(wordString.toLowerCase())) {
           // Get corresponding positions for this word
           const wordPositions = positions.slice(startIdx, startIdx + wordLength);
           
-          validWords.push({
-            letters: word,
+          validWordsAndPositions.push({
+            letters: wordString,
             positions: wordPositions
           });
         }
       }
     }
     
-    return validWords;
+    return validWordsAndPositions;
+  }
+
+  /**
+   * Finds all words for a set of [row,col] positions; dedupes overlapping results.
+   * Centralizes the multi-position search logic so callers don't reimplement it.
+   * @param {Object} board - The game board object
+   * @param {Array<Array<number>>} positions - Array of [row, col] positions
+   * @returns {Array<{letters:string, positions:number[][], direction:string}>}
+   */
+  findWordsAt(board, positions) {
+    if (!Array.isArray(positions) || positions.length === 0) return [];
+
+    // Deduplicate input positions
+    const uniquePositions = [...new Set(positions.map(p => JSON.stringify(p)))]
+      .map(s => JSON.parse(s));
+
+    // Aggregate words found at each unique position
+    const allFoundWordsAndPositions = uniquePositions.flatMap(([row, col]) =>
+      this.checkForWords(row, col, board)
+    );
+
+    // Deduplicate by letters + exact positions to avoid duplicates from overlapping checks
+    const seen = new Set();
+    const uniqueWordsAndPositions = [];
+    for (const wordData of allFoundWordsAndPositions) {
+      const key = `${wordData.letters}|${JSON.stringify(wordData.positions)}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueWordsAndPositions.push(wordData);
+      }
+    }
+
+    return uniqueWordsAndPositions;
   }
 }
