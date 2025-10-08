@@ -13,7 +13,7 @@ export function createGameBoard(rows = 6, cols = 7) {
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       const tile = document.createElement('div');
-      tile.className = 'tile';
+      tile.className = 'tile board';
       tile.dataset.row = row;
       tile.dataset.col = col;
       boardContainer.appendChild(tile);
@@ -29,7 +29,7 @@ export class GameBoard {
   }
 
   getTileElement(row, col) {
-    return this.boardContainer.querySelector(`.tile[data-row="${row}"][data-col="${col}"]`);
+    return this.boardContainer.querySelector(`.tile.board[data-row="${row}"][data-col="${col}"]`);
   }
 
   setTileContent(row, col, content) {
@@ -44,7 +44,7 @@ export class GameBoard {
 
   setTileClass(row, col, className) {
     const tile = this.getTileElement(row, col);
-    if (tile) tile.className = `tile ${className}`;
+    if (tile) tile.className = `tile board ${className}`;
   }
 
   resetBoard() {

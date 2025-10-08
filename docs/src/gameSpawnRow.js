@@ -12,7 +12,7 @@ export function createSpawnRow(cols = 7) {
 
   for (let col = 0; col < cols; col++) {
     const spawnTile = document.createElement('div');
-    spawnTile.className = 'spawn-tile';
+    spawnTile.className = 'tile spawn';
     spawnTile.dataset.col = col;
     spawnRowContainer.appendChild(spawnTile);
   }
@@ -25,7 +25,7 @@ export class SpawnRow {
   }
 
   getSpawnTileElement(col) {
-    return this.spawnRowContainer.querySelector(`.spawn-tile[data-col="${col}"]`);
+    return this.spawnRowContainer.querySelector(`.tile.spawn[data-col="${col}"]`);
   }
 
   setSpawnTileContent(col, content) {
@@ -40,7 +40,7 @@ export class SpawnRow {
 
   setSpawnTileClass(col, className) {
     const tile = this.getSpawnTileElement(col);
-    if (tile) tile.className = `spawn-tile ${className}`;
+    if (tile) tile.className = `tile spawn ${className}`;
   }
 
   clearAllSpawnTiles() {
@@ -48,5 +48,18 @@ export class SpawnRow {
       this.clearSpawnTile(col);
       this.setSpawnTileClass(col, 'inactive');
     }
+  }
+
+    /**
+   * Updates the spawn tile in the spawn row with the given letter.
+   * @param {string} letter - The letter to display in the spawn tile.
+   */
+  updateSpawnTile(letter) {
+    // Clear all spawn tiles first
+    this.clearAllSpawnTiles();
+    
+    // Set the letter in the first column (or you can specify a column)
+    this.setSpawnTileContent(0, letter.toUpperCase());
+    this.setSpawnTileClass(0, 'active');
   }
 }

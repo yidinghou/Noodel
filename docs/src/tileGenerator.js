@@ -2,6 +2,10 @@
  * A class responsible for generating a constrained and weighted sequence of letters (tiles)
  * for a tile-based word game.
  */
+
+import {PreviewContainer} from './gamePreviewContainer.js';
+import {SpawnRow} from './gameSpawnRow.js';
+
 export class TileGenerator {
   /**
    * @param {number} tileCount - The total number of tiles to generate in a batch.
@@ -9,6 +13,7 @@ export class TileGenerator {
   constructor(tileCount = 100) {
     this.tileCount = tileCount;
     this.currentIndex = 0; // Tracks which tile in the sequence is next
+    this.observers = []; // For the observer pattern to notify preview components
 
     // Define vowels (used for generation rules)
     this.vowels = 'aeiou'.split('');
@@ -163,7 +168,14 @@ export class TileGenerator {
     }
 
     // Return the current tile and increment the index
-    return this.tiles[this.currentIndex++];
+    const nextTile = this.tiles[this.currentIndex];
+    
+    // Notify observers about the change in upcoming tiles
+    this.notifyObservers();
+
+    this.currentIndex++;
+
+    return nextTile;
   }
 
   /**
@@ -171,5 +183,51 @@ export class TileGenerator {
    */
   reset() {
     this.generateTiles();
+    this.notifyObservers();
+  }
+
+  /**
+   * Add the spawn row and preview container as observers of the tile generator.
+   * @param {Object} observer - An object with updatePreview method
+   */
+  addObserver(observer) {
+    if (observer instanceof SpawnRow) {
+      this.observers.push({ type: 'spawnRow', ref: observer });
+    } else if (observer instanceof PreviewContainer) {
+      this.observers.push({ type: 'previewContainer', ref: observer });
+    }
+  }
+
+  /**
+   * Notify all observers (like preview and spawn row) to update their display
+   * based on the current upcoming tiles.
+   */
+  notifyObservers() {
+    const upcomingLetters = this.peekUpcoming(4);
+    const newPreviewLetter = upcomingLetters[upcomingLetters.length - 1]; // The next tile to spawn
+    const newSpawnLetter = upcomingLetters[0]; // The tile in the spawn row
+
+    this.observers.forEach(({ type, ref }) => {
+    if (type === 'spawnRow') {
+      ref.updateSpawnTile(newSpawnLetter);
+    }
+    if (type === 'previewContainer') {
+      ref.updatePreview(newPreviewLetter);
+    }
+  });
+  }
+
+  /**
+   * Peek at the next N upcoming tiles without consuming them
+   * @param {number} count - Number of upcoming tiles to peek
+   * @returns {Array} - Array of upcoming tile letters
+   */
+  peekUpcoming(count) {
+    const upcomingTiles = [];
+    for (let i = 0; i < count; i++) {
+      const index = (this.currentIndex + i) % this.tiles.length;
+      upcomingTiles.push(this.tiles[index]);
+    }
+    return upcomingTiles;
   }
 }

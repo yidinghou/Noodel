@@ -16,17 +16,21 @@
   margin: 0 auto;
   gap: 0;
 }
+/* Base tile properties for all tile types */
 .tile {
-  background: #f8f8fa;
   box-sizing: border-box;
-  width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: clamp(1rem, 4vw, 1.5rem); /* Responsive font size */
   min-height: 35px; /* Minimum height for touch targets */
   min-width: 35px; /* Minimum width for touch targets */
+}
+/* Board tile specific properties */
+.tile.board {
+  background: #f8f8fa;
+  width: 100%;
+  height: 100%;
   box-shadow: 0 0 0 1px #444 inset;
   border: none;
 }
@@ -45,7 +49,7 @@
 
 /* Spawn Row styles */
 #spawn-row {
-  display: grid;
+  display: grid; /* Hide spawn row by default, will be shown with JS when needed */
   width: 100%;
   max-width: 420px; /* Match game board width */
   aspect-ratio: 7 / 1;
@@ -54,32 +58,26 @@
   border: none; /* Make spawn row border invisible */
 }
 
-.spawn-tile {
+.tile.spawn {
   background: transparent;
-  box-sizing: border-box;
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: clamp(1rem, 4vw, 1.5rem);
-  min-height: 35px;
-  min-width: 35px;
+  border: none; /* Remove default border */
 }
 
 /* Spawn row inactive: invisible border */
-.spawn-tile.inactive {
+.tile.spawn.inactive {
   border: 1px solid transparent;
   opacity: 0.2;
 }
 
 /* Spawn row active: bold border */
-.spawn-tile.active {
+.tile.spawn.active {
   border: 3px solid #222;
   opacity: 1;
 }
 
-.spawn-tile:hover {
+.tile.spawn:hover {
   background: rgba(173, 216, 230, 0.2); /* Light blue hint on hover */
   cursor: pointer;
 }
@@ -131,4 +129,54 @@
     transform: translateX(0) scale(1.1);
     box-shadow: 0 0 20px rgba(40, 167, 69, 0.6);
   }
+}
+
+/* Preview container styles */
+.preview-panel {
+  display: flex;
+  justify-content: flex-end; /* Align to the right */
+  width: 100%;
+  max-width: 420px; /* Match game board width */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#preview-container {
+  display: grid;
+  margin: 10px 0;
+}
+
+.tile.preview {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid #ddd;
+  background-color: #f8f8fa;
+  font-size: clamp(0.9rem, 3vw, 1.2rem);
+  font-weight: bold;
+  box-shadow: 0 0 0 1px #444 inset;
+}
+
+.tile.preview.has-letter {
+  background-color: #e9ecef;
+}
+
+/* Animation for the next letter moving to spawn row */
+@keyframes moveToSpawn {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(15px) scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(30px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+.tile.preview.moving-to-spawn {
+  animation: moveToSpawn 0.5s forwards;
+  z-index: 10; /* Ensure the animated tile appears above other elements */
 }
