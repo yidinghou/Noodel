@@ -64,17 +64,14 @@ export class Game {
     const tile = event.target.closest('.tile');
     if (tile) {
       const col = parseInt(tile.dataset.col, 10);
-      const tilesInColumn = this.gameBoard.countTilesPerColumn(col);
-      const endRow = this.rows - 1 - tilesInColumn;
+      const endRow = this.gameBoard.getEndRowForColumn(col);
+      const newLetter = this.spawnLetter;
 
-      // Check if column is full
       if (endRow < 0) {
         console.log(`Column ${col} is full!`);
         return;
       }
 
-      const newLetter = this.spawnLetter;
-      
       // Step 1: Clear the spawn row tile
       this.spawnRow.clearAllSpawnTiles();
       

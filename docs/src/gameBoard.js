@@ -133,6 +133,12 @@ export class GameBoard {
     return count;
   }
   
+  getEndRowForColumn(col) {
+      const tilesInColumn = this.countTilesPerColumn(col);
+      const endRow = this.rows - 1 - tilesInColumn;
+      return endRow;
+  }
+
   /**
    * Animates a found word: highlights, shakes, clears, and applies gravity.
    * @param {Array} positions - Array of [row, col] pairs for word tiles
