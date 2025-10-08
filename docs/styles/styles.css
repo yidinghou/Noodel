@@ -149,15 +149,14 @@
 .tile.preview {
   width: 100%;
   aspect-ratio: 1 / 1;
-  border: 1px solid #ddd;
-  background-color: #f8f8fa;
+  background-color: #ffffff;
   font-size: clamp(0.9rem, 3vw, 1.2rem);
-  font-weight: bold;
-  box-shadow: 0 0 0 1px #444 inset;
+  box-shadow: none;
 }
 
 .tile.preview.has-letter {
-  background-color: #e9ecef;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 1px #444 inset;
 }
 
 /* Animation for the next letter moving to spawn row */
