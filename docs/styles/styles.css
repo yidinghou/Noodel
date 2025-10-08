@@ -58,13 +58,6 @@
   border: none; /* Make spawn row border invisible */
 }
 
-.tile.spawn {
-  background: transparent;
-  width: 100%;
-  height: 100%;
-  border: none; /* Remove default border */
-}
-
 /* Spawn row inactive: invisible border */
 .tile.spawn.inactive {
   border: 1px solid transparent;
@@ -178,4 +171,14 @@
 .tile.preview.moving-to-spawn {
   animation: moveToSpawn 0.5s forwards;
   z-index: 10; /* Ensure the animated tile appears above other elements */
+}
+
+@keyframes hopIn {
+  0% { transform: translateY(40%) scale(0.8); opacity: 0; }
+  60% { transform: translateY(-20%) scale(1.15); opacity: 1; }
+  80% { transform: translateY(0%) scale(1.05); opacity: 1; }
+  100% { transform: translateY(0%) scale(1); opacity: 1; }
+}
+.hop-in {
+  animation: hopIn 0.4s cubic-bezier(0.4, 0.8, 0.4, 1) both;
 }

@@ -12,7 +12,7 @@ export function createSpawnRow(cols = 7) {
 
   for (let col = 0; col < cols; col++) {
     const spawnTile = document.createElement('div');
-    spawnTile.className = 'tile spawn';
+    spawnTile.className = 'tile spawn inactive'; // Start as inactive
     spawnTile.dataset.col = col;
     spawnRowContainer.appendChild(spawnTile);
   }

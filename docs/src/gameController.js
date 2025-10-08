@@ -14,6 +14,7 @@ export class Game {
     this.tileGenerator = new TileGenerator();
       
     // this.tileGenerator.tiles = ['1', '2', '3', '4', '5', '6', '7', '8', '9']; 
+    this.tileGenerator.tiles = ['R', 'O', 'E']; 
 
     this.wordValidator = new WordValidator(3);
     this.isReady = false;
@@ -38,30 +39,46 @@ export class Game {
     createSpawnRow(7);
     const spawnRow = new SpawnRow('spawn-row', 7);
     this.spawnRow = spawnRow;
-    
-    // Connect preview container to tile generator
+
+    // Initialize the word validator dictionary
+    await this.wordValidator.init();
+
+  }
+
+  startGame() {
     this.tileGenerator.addObserver(this.previewContainer);
     this.tileGenerator.addObserver(this.spawnRow);
 
+    // Get the next 3 upcoming letters
     const upcomingLetters = this.tileGenerator.peekUpcoming(3);
-    this.previewContainer.initPreviewTiles(upcomingLetters);
-    
-    // Add a visual delay to see the observer pattern working
-    console.log('Initializing first tile with observer pattern...');
-    await new Promise(resolve => setTimeout(resolve, 300)); // 300ms delay
-    
-    // Initialize spawn letter - this will trigger observer notifications
-    this.spawnLetter = this.tileGenerator.getNextTile().toUpperCase();
-    
-    console.log('Observer pattern triggered - spawn row and preview should update');
-    
-    // Initialize the word validator asynchronously
-    console.log('Loading dictionary...');
-    await this.wordValidator.init();
-    this.isReady = true;
 
-    this.setupGameBoardInteraction();
-    console.log('Game initialized.');
+    // Show preview and spawn row
+    document.getElementById('preview-container').classList.add('visible');
+    document.getElementById('spawn-row').classList.add('visible');
+
+    // Update the preview tiles with the upcoming letters
+    this.previewContainer.initPreviewTiles(upcomingLetters);
+
+    const previewTiles = this.previewContainer.previewTiles;
+    previewTiles.forEach((tile, index) => {
+      // Staggered animation delay for each tile
+      tile.style.animationDelay = `${index * 0.1}s`;
+      tile.classList.add('hop-in');
+      setTimeout(() => {
+        tile.classList.remove('hop-in');
+        tile.style.animationDelay = ''; // Clear the delay after animation
+      }, 400);
+    });
+
+    // Move spawnLetter assignment here, after hop-in animation
+    setTimeout(() => {
+      // Initialize spawn letter - this will trigger observer notifications
+      this.spawnLetter = this.tileGenerator.getNextTile().toUpperCase();
+
+      this.isReady = true;
+      this.setupGameBoardInteraction();
+      console.log('Game initialized.');
+    }, 600); // Delay matches animation duration
   }
 
   disableInput(reason = 'animation') {
