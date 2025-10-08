@@ -204,22 +204,46 @@ export class WordValidator {
     const { letters, positions } = letterData;
     const segments = this.extractContinuousSegments(letters, positions);
     
-    return segments
-      .filter(segment => this._isValidWordSegment(segment))
-      .map(segment => ({
-        ...segment,
+    // Find all valid words in each segment and combine them
+    const result = segments.flatMap(segment => 
+      this._findValidWordsInSegment(segment).map(word => ({
+        ...word,
         direction: directionName
-      }));
+      }))
+    );
+
+    return result;
   }
 
   /**
-   * Helper: Validates if a segment is a valid word
+   * Helper: Finds all valid words within a segment
    * @param {Object} segment - Segment with {letters, positions}
-   * @returns {boolean} True if segment is a valid word
+   * @returns {Array} Array of valid words found in the segment
    * @private
    */
-  _isValidWordSegment(segment) {
-    return segment.letters.length >= this.minWordLength &&
-           this.dictionary.hasWord(segment.letters.toLowerCase());
+  _findValidWordsInSegment(segment) {
+    const { letters, positions } = segment;
+    const validWords = [];
+    const segmentLength = letters.length;
+    
+    // Check all possible substrings of sufficient length
+    for (let wordLength = this.minWordLength; wordLength <= segmentLength; wordLength++) {
+      // Check each possible starting position for words of this length
+      for (let startIdx = 0; startIdx <= segmentLength - wordLength; startIdx++) {
+        const word = letters.substring(startIdx, startIdx + wordLength);
+        
+        if (this.dictionary.hasWord(word.toLowerCase())) {
+          // Get corresponding positions for this word
+          const wordPositions = positions.slice(startIdx, startIdx + wordLength);
+          
+          validWords.push({
+            letters: word,
+            positions: wordPositions
+          });
+        }
+      }
+    }
+    
+    return validWords;
   }
 }
