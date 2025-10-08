@@ -23,6 +23,7 @@ export class Game {
     createSpawnRow(7);
     const spawnRow = new SpawnRow('spawn-row', 7);
     this.spawnRow = spawnRow;
+    this.tileGenerator.tiles = ['E', 'O', 'R']; // For testing, force specific letters
     this.spawnLetter = this.tileGenerator.getNextTile().toUpperCase();
     this.spawnRow.setSpawnTileContent(0, this.spawnLetter); // Initial position
 
@@ -107,17 +108,87 @@ export class Game {
    * @param {number} col - Column where tile was placed
    */
   async checkForWordsAndAnimate(row, col) {
-    const foundWords = this.wordValidator.checkForWords(row, col, this.gameBoard);
+    await this._checkAndAnimateWords([[row, col]]);
+  }
+  
+  /**
+   * Recursively checks for words at positions and applies chain reactions
+   * @param {Array<Array<number>>} positions - Array of [row, col] positions to check
+   * @private
+   */
+  async _checkAndAnimateWords(positions) {
+    // Collect all unique positions to check
+    const uniquePositions = [...new Set(positions.map(pos => JSON.stringify(pos)))]
+      .map(posStr => JSON.parse(posStr));
     
-    if (foundWords.length > 0) {
-      console.log(`Found ${foundWords.length} word(s):`, foundWords.map(w => w.letters));
+    // Track all columns affected for checking chain reactions
+    let affectedColumns = new Set();
+    
+    // Collect all found words from all positions
+    let foundAnyWords = false;
+    let allFoundWords = [];
+    
+    // First, check all positions and collect all words
+    for (const [row, col] of uniquePositions) {
+      const foundWords = this.wordValidator.checkForWords(row, col, this.gameBoard);
       
-      // Animate each found word (includes gravity automatically)
-      for (const wordObj of foundWords) {
-        await this.gameBoard.animateWordFound(wordObj.positions, 600, true);
+      if (foundWords.length > 0) {
+        foundAnyWords = true;
+        allFoundWords = [...allFoundWords, ...foundWords];
+        console.log(`Found ${foundWords.length} word(s) at [${row},${col}]:`, foundWords.map(w => w.letters));
+      }
+    }
+    
+    // Process all found words
+    if (allFoundWords.length > 0) {
+      console.log(`Processing ${allFoundWords.length} total words`);
+      
+      // Collect all positions from all words for highlighting
+      const allPositions = [];
+      
+      // Track which columns will be affected for gravity
+      allFoundWords.forEach(wordObj => {
+        // Add all positions to the highlight list
+        wordObj.positions.forEach(pos => {
+          allPositions.push(pos);
+          // Track affected columns for gravity
+          affectedColumns.add(pos[1]);
+        });
+      });
+      
+      // Create a set of unique position strings to deduplicate
+      const uniquePositionStrings = [...new Set(allPositions.map(pos => JSON.stringify(pos)))];
+      
+      // Convert back to position arrays
+      const uniqueAllPositions = uniquePositionStrings.map(posStr => JSON.parse(posStr));
+      
+      // Animate all found words simultaneously (all positions highlight at once)
+      await this.gameBoard.animateWordFound(uniqueAllPositions, 300, true);
+    }
+    
+    // If we found words and applied gravity, check for chain reactions
+    if (foundAnyWords && affectedColumns.size > 0) {
+      console.log('Checking for chain reactions in columns:', [...affectedColumns]);
+      
+      // Build positions to check after tiles have fallen
+      const positionsToCheck = [];
+      
+      // For each affected column, check every filled row position
+      for (const col of affectedColumns) {
+        const filledTiles = this.gameBoard.countTilesPerColumn(col);
         
-        // Add small delay between word animations for visual effect
-        await new Promise(res => setTimeout(res, 200));
+        // Check all positions with tiles in the affected columns
+        for (let r = this.rows - 1; r >= this.rows - filledTiles; r--) {
+          positionsToCheck.push([r, col]);
+        }
+      }
+      
+      if (positionsToCheck.length > 0) {
+        // Add minimal delay to make chain reactions visible (reduced from 300ms to 100ms)
+        await new Promise(res => setTimeout(res, 100));
+        
+        // Recursively check these positions for new words
+        await this._checkAndAnimateWords(positionsToCheck);
       }
     }
   }
