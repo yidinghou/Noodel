@@ -83,12 +83,7 @@ export class Game {
       this.gameBoard.setTileClass(0, col, 'falling');
       
       // Step 3: Animate the tile falling from row 0 to endRow
-      if (endRow > 0) {
-        await this.gameBoard._animateDrop(col, 0, endRow, newLetter, 80);
-      } else {
-        // If endRow is 0, just finalize the tile
-        this.gameBoard.setTileClass(0, col, 'locked');
-      }
+      await this.gameBoard._animateDrop(col, 0, endRow, newLetter, 80);
 
       // Step 4: Check for words at the landing position
       await this.checkForWordsAndAnimate(endRow, col);
