@@ -1,38 +1,133 @@
-/* Mobile adjustments */
+/* Mobile responsive adjustments */
 @media (max-width: 768px) {
-  #game-board {
-    max-width: 100%; /* Full width on small screens */
+  .game-wrapper {
+    padding: 0 8px;
   }
+
+  .game-header {
+    max-width: 100%;
+    padding: 8px 12px;
+  }
+
+  .game-title {
+    font-size: 1.5rem;
+  }
+
+  #game-board {
+    max-width: 100%;
+  }
+
+  .preview-panel,
+  #spawn-row {
+    max-width: 100%;
+  }
+
   .tile {
-    box-shadow: 0 0 0 1px #777 inset; /* Slightly darker grid lines for visibility */
+    font-size: clamp(0.7rem, 3.5vw, 1.1rem);
   }
 }
-/* Ensure tiles are square and have borders */
+
+
+/* Game Wrapper - Contains both header and game board */
+.game-wrapper {
+  max-width: 900px;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+}
+
+/* Game Header - Takes 1/4 of the height */
+.game-header {
+  height: 25vh;
+  min-height: 80px;
+  max-height: 150px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.game-title {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.score-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.score-container h2 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.start-btn {
+  padding: 8px 16px;
+  font-size: 1rem;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.start-btn:hover {
+  background: #218838;
+}
+
+/* Main container - Contains game board and right panel - Takes 75% of the height */
+.main-container {
+  height: 75vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+/* Game board - responsive grid */
 #game-board {
   display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
   width: 100%;
-  max-width: 420px; /* 7 columns * 60px per tile */
-  aspect-ratio: 7 / 6;
-  margin: 0 auto;
+  max-width: 420px;
+  min-width: 0;
+  aspect-ratio: 7 / 6; /* Force proper proportions: 7 cols by 6 rows */
   gap: 0;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
-/* Base tile properties for all tile types */
+
+/* Base tile properties */
 .tile {
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(1rem, 4vw, 1.5rem); /* Responsive font size */
-  min-height: 35px; /* Minimum height for touch targets */
-  min-width: 35px; /* Minimum width for touch targets */
+  font-size: clamp(0.8rem, 4vw, 1.5rem);
 }
 /* Board tile specific properties */
 .tile.board {
   background: #f8f8fa;
-  width: 100%;
-  height: 100%;
   box-shadow: 0 0 0 1px #444 inset;
-  border: none;
 }
 
 /* Falling tile animation style */
@@ -49,13 +144,14 @@
 
 /* Spawn Row styles */
 #spawn-row {
-  display: grid; /* Hide spawn row by default, will be shown with JS when needed */
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
   width: 100%;
-  max-width: 420px; /* Match game board width */
+  max-width: 420px;
+  height: auto;
   aspect-ratio: 7 / 1;
   margin: 0 auto;
-  gap: 0px;
-  border: none; /* Make spawn row border invisible */
+  gap: 0;
 }
 
 /* Spawn row inactive: invisible border */
@@ -127,23 +223,25 @@
 /* Preview container styles */
 .preview-panel {
   display: flex;
-  justify-content: flex-end; /* Align to the right */
+  justify-content: flex-end;
   width: 100%;
-  max-width: 420px; /* Match game board width */
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 420px;
+  margin: 0 auto;
 }
 
 #preview-container {
   display: grid;
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
 .tile.preview {
+  min-width: 0;
+  min-height: 0;
   width: 100%;
+  height: 100%;
   aspect-ratio: 1 / 1;
   background-color: #ffffff;
-  font-size: clamp(0.9rem, 3vw, 1.2rem);
+  font-size: clamp(0.8rem, 3vw, 1.2rem);
   box-shadow: none;
 }
 
@@ -182,3 +280,28 @@
 .hop-in {
   animation: hopIn 0.4s cubic-bezier(0.4, 0.8, 0.4, 1) both;
 }
+
+/* Outer wrapper around the play area (matches .game-board div in HTML) */
+.game-board {
+  height: 100%;                 /* take full height of .main-container (75vh) */
+  display: flex;
+  align-items: center;          /* center inner container vertically */
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Inner container that holds preview, spawn-row and the grid */
+.game-board-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px 0;
+}
+

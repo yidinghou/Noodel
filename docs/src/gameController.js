@@ -45,7 +45,49 @@ export class Game {
 
   }
 
-  startGame() {
+  resetGame() {
+    // Reset game state
+    this.isReady = false;
+    this.enableInput(); // Reset input state
+
+    // Clear observers first to prevent automatic updates
+    this.tileGenerator.clearObservers();
+
+    // Reset tile generator (this will generate new tiles but won't notify since observers are cleared)
+    this.tileGenerator.reset();
+
+    // Reset game board
+    if (this.gameBoard) {
+      this.gameBoard.resetBoard();
+    }
+
+    // Reset spawn row (after clearing observers so it stays clear)
+    if (this.spawnRow) {
+      this.spawnRow.clearAllSpawnTiles();
+    }
+
+    // Reset preview container
+    if (this.previewContainer) {
+      this.previewContainer.clearPreview();
+    }
+
+    // Hide preview and spawn row
+    document.getElementById('preview-container').classList.remove('visible');
+    document.getElementById('spawn-row').classList.remove('visible');
+    
+    // Update button text back to "Start Game"
+    const startBtn = document.getElementById('start-btn');
+    if (startBtn) {
+      startBtn.textContent = 'Start Game';
+    }
+    
+    console.log('Game reset completed.');
+  }
+
+  startGame() { 
+    // Reset all game components before starting new game
+    this.resetGame();
+
     this.tileGenerator.addObserver(this.previewContainer);
     this.tileGenerator.addObserver(this.spawnRow);
 
@@ -77,6 +119,13 @@ export class Game {
 
       this.isReady = true;
       this.setupGameBoardInteraction();
+      
+      // Update button text to "Reset Game"
+      const startBtn = document.getElementById('start-btn');
+      if (startBtn) {
+        startBtn.textContent = 'Reset Game';
+      }
+      
       console.log('Game initialized.');
     }, 600); // Delay matches animation duration
   }

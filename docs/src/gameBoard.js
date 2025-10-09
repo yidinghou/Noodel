@@ -6,10 +6,6 @@ export function createGameBoard(rows = 6, cols = 7) {
   const boardContainer = document.getElementById('game-board');
   boardContainer.innerHTML = ''; // Clear any previous board
 
-  // Set up CSS grid styles
-  boardContainer.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-  boardContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       const tile = document.createElement('div');

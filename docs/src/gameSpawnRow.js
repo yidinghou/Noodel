@@ -58,8 +58,9 @@ export class SpawnRow {
     // Clear all spawn tiles first
     this.clearAllSpawnTiles();
     
-    // Set the letter in the first column (or you can specify a column)
-    this.setSpawnTileContent(0, letter.toUpperCase());
-    this.setSpawnTileClass(0, 'active');
+    // Set the letter in the rightmost column (column 6 for a 7-column board)
+    const rightmostCol = this.cols - 1;
+    this.setSpawnTileContent(rightmostCol, letter.toUpperCase());
+    this.setSpawnTileClass(rightmostCol, 'active');
   }
 }

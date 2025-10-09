@@ -122,4 +122,14 @@ initialize() {
     }
   }
 
+  /**
+   * Clear all preview tiles
+   */
+  clearPreview() {
+    this.previewTiles.forEach(tile => {
+      tile.textContent = '';
+      tile.classList.remove('has-letter');
+    });
+  }
+
 }

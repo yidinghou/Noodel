@@ -199,6 +199,13 @@ export class TileGenerator {
   }
 
   /**
+   * Clear all observers
+   */
+  clearObservers() {
+    this.observers = [];
+  }
+
+  /**
    * Notify all observers (like preview and spawn row) to update their display
    * based on the current upcoming tiles.
    */
