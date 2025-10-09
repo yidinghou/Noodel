@@ -3,7 +3,7 @@
  * Each spawn tile is a div with classes and data attributes for column position.
  */
 export function createSpawnRow(cols = 7) {
-  const spawnRowContainer = document.getElementById('spawn-row');
+  const spawnRowContainer = document.getElementById('tile-spawn-row');
   spawnRowContainer.innerHTML = ''; // Clear any previous spawn row
 
   // Set dynamic grid template columns and rows
@@ -19,7 +19,7 @@ export function createSpawnRow(cols = 7) {
 }
 
 export class SpawnRow {
-  constructor(spawnRowId = 'spawn-row', cols = 7) {
+  constructor(spawnRowId = 'tile-spawn-row', cols = 7) {
     this.spawnRowContainer = document.getElementById(spawnRowId);
     this.cols = cols;
   }
@@ -28,7 +28,7 @@ export class SpawnRow {
     return this.spawnRowContainer.querySelector(`.tile.spawn[data-col="${col}"]`);
   }
 
-  setSpawnTileContent(col, content) {
+  setSpawnTileContent(col, content) { 
     const tile = this.getSpawnTileElement(col);
     if (tile) tile.textContent = content;
   }
@@ -54,13 +54,13 @@ export class SpawnRow {
    * Updates the spawn tile in the spawn row with the given letter.
    * @param {string} letter - The letter to display in the spawn tile.
    */
-  updateSpawnTile(letter) {
+  updateSpawnTile(letter, className = 'active') {
     // Clear all spawn tiles first
     this.clearAllSpawnTiles();
     
     // Set the letter in the rightmost column (column 6 for a 7-column board)
-    const rightmostCol = this.cols - 1;
+    const rightmostCol = this.cols - 2;
     this.setSpawnTileContent(rightmostCol, letter.toUpperCase());
-    this.setSpawnTileClass(rightmostCol, 'active');
+    this.setSpawnTileClass(rightmostCol, className);
   }
 }

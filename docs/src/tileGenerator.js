@@ -13,7 +13,7 @@ export class TileGenerator {
   constructor(tileCount = 100) {
     this.tileCount = tileCount;
     this.currentIndex = 0; // Tracks which tile in the sequence is next
-    this.observers = []; // For the observer pattern to notify preview components
+    this.observer = null; // For the observer pattern to notify preview components
 
     // Define vowels (used for generation rules)
     this.vowels = 'aeiou'.split('');
@@ -191,18 +191,14 @@ export class TileGenerator {
    * @param {Object} observer - An object with updatePreview method
    */
   addObserver(observer) {
-    if (observer instanceof SpawnRow) {
-      this.observers.push({ type: 'spawnRow', ref: observer });
-    } else if (observer instanceof PreviewContainer) {
-      this.observers.push({ type: 'previewContainer', ref: observer });
-    }
+    this.observer = observer;
   }
 
   /**
    * Clear all observers
    */
   clearObservers() {
-    this.observers = [];
+    this.observer = null;
   }
 
   /**
@@ -212,16 +208,8 @@ export class TileGenerator {
   notifyObservers() {
     const upcomingLetters = this.peekUpcoming(4);
     const newPreviewLetter = upcomingLetters[upcomingLetters.length - 1]; // The next tile to spawn
-    const newSpawnLetter = upcomingLetters[0]; // The tile in the spawn row
 
-    this.observers.forEach(({ type, ref }) => {
-    if (type === 'spawnRow') {
-      ref.updateSpawnTile(newSpawnLetter);
-    }
-    if (type === 'previewContainer') {
-      ref.updatePreview(newPreviewLetter);
-    }
-  });
+    this.observer.updatePreview(newPreviewLetter);
   }
 
   /**

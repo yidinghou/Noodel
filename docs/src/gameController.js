@@ -1,6 +1,6 @@
 import { createGameBoard, GameBoard } from './gameBoard.js';
 import { createSpawnRow, SpawnRow } from './gameSpawnRow.js';
-import { TileGenerator } from './TileGenerator.js';
+import { TileGenerator } from './tileGenerator.js';
 import { WordValidator } from './wordValidator.js';
 import { PreviewContainer } from './gamePreviewContainer.js';
 
@@ -33,12 +33,13 @@ export class Game {
     this.gameBoardElement = document.getElementById(this.boardId);
 
     // Initialize preview container
-    this.previewContainer = new PreviewContainer('preview-container', 3);
+    this.previewContainer = new PreviewContainer('next-tiles-preview', 4);
     
     // Initialize spawn row
+    this.spawnRow = new SpawnRow('tile-spawn-row', 7);
     createSpawnRow(7);
-    const spawnRow = new SpawnRow('spawn-row', 7);
-    this.spawnRow = spawnRow;
+    this.spawnRow.clearAllSpawnTiles();
+
 
     // Initialize the word validator dictionary
     await this.wordValidator.init();
@@ -52,7 +53,8 @@ export class Game {
 
     // Clear observers first to prevent automatic updates
     this.tileGenerator.clearObservers();
-
+    this.tileGenerator.addObserver(this.previewContainer);
+    this.previewContainer.addObserver(this.spawnRow);
     // Reset tile generator (this will generate new tiles but won't notify since observers are cleared)
     this.tileGenerator.reset();
 
@@ -72,8 +74,8 @@ export class Game {
     }
 
     // Hide preview and spawn row
-    document.getElementById('preview-container').classList.remove('visible');
-    document.getElementById('spawn-row').classList.remove('visible');
+    document.getElementById('next-tiles-preview').classList.remove('visible');
+    document.getElementById('tile-spawn-row').classList.remove('visible');
     
     // Update button text back to "Start Game"
     const startBtn = document.getElementById('start-btn');
@@ -88,15 +90,12 @@ export class Game {
     // Reset all game components before starting new game
     this.resetGame();
 
-    this.tileGenerator.addObserver(this.previewContainer);
-    this.tileGenerator.addObserver(this.spawnRow);
-
     // Get the next 3 upcoming letters
     const upcomingLetters = this.tileGenerator.peekUpcoming(3);
 
     // Show preview and spawn row
-    document.getElementById('preview-container').classList.add('visible');
-    document.getElementById('spawn-row').classList.add('visible');
+    document.getElementById('next-tiles-preview').classList.add('visible');
+    document.getElementById('tile-spawn-row').classList.add('visible');
 
     // Update the preview tiles with the upcoming letters
     this.previewContainer.initPreviewTiles(upcomingLetters);
@@ -109,7 +108,7 @@ export class Game {
       setTimeout(() => {
         tile.classList.remove('hop-in');
         tile.style.animationDelay = ''; // Clear the delay after animation
-      }, 400);
+      }, 600);
     });
 
     // Move spawnLetter assignment here, after hop-in animation
@@ -162,7 +161,7 @@ export class Game {
       
       // Show spawn row on mouse enter
       this.gameBoardElement.addEventListener('mouseenter', () => {
-        document.getElementById('spawn-row').style.display = 'grid';
+        document.getElementById('tile-spawn-row').style.display = 'grid';
       });
 
       tiles.forEach((tile) => {

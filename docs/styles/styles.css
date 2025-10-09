@@ -2,6 +2,7 @@
 @media (max-width: 768px) {
   .game-wrapper {
     padding: 0 8px;
+    overflow: hidden;
   }
 
   .game-header {
@@ -13,12 +14,12 @@
     font-size: 1.5rem;
   }
 
-  #game-board {
+  #game-grid {
     max-width: 100%;
   }
 
   .preview-panel,
-  #spawn-row {
+  #tile-spawn-row {
     max-width: 100%;
   }
 
@@ -30,13 +31,14 @@
 
 /* Game Wrapper - Contains both header and game board */
 .game-wrapper {
-  max-width: 900px;
+  max-width: 420px;
   width: 100%;
   height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: 0 auto;
+
 }
 
 /* Game Header - Takes 1/4 of the height */
@@ -45,7 +47,7 @@
   min-height: 80px;
   max-height: 150px;
   width: 100%;
-  max-width: 420px;
+  max-width: inherit;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -98,8 +100,8 @@
   display: flex;
   justify-content: center;
 }
-/* Game board - responsive grid */
-#game-board {
+/* Game grid - responsive grid */
+#game-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: repeat(6, 1fr);
@@ -123,6 +125,9 @@
   align-items: center;
   justify-content: center;
   font-size: clamp(0.8rem, 4vw, 1.5rem);
+  transition: transform 0.5s ease-in-out, opacity 0.3s;
+  position: relative; /* Essential for transform to work in the grid context */
+  z-index: 10;
 }
 /* Board tile specific properties */
 .tile.board {
@@ -142,8 +147,8 @@
   color: white;
 }
 
-/* Spawn Row styles */
-#spawn-row {
+/* Tile Spawn Row styles */
+#tile-spawn-row {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   width: 100%;
@@ -157,7 +162,7 @@
 /* Spawn row inactive: invisible border */
 .tile.spawn.inactive {
   border: 1px solid transparent;
-  opacity: 0.2;
+  opacity: 0;
 }
 
 /* Spawn row active: bold border */
@@ -223,16 +228,30 @@
 /* Preview container styles */
 .preview-panel {
   display: flex;
-  justify-content: flex-end;
   width: 100%;
-  max-width: 420px;
   margin: 0 auto;
 }
 
-#preview-container {
+#pasta-placeholder {
   display: grid;
+  flex: 2;
+  grid-template-columns: repeat(7, 1fr); /* or 5, if you want 5 tiles */
+  width: 100%;           /* Fill parent width */
+  max-width: inherit;    /* Inherit from parent (.game-wrapper or .board-wrapper) */
+  gap: 1px;
   margin: 8px 0;
 }
+
+#next-tiles-preview {
+  display: grid;
+  flex: 5;
+  grid-template-columns: repeat(5, 1fr); /* or 5, if you want 5 tiles */
+  width: 100%;           /* Fill parent width */
+  max-width: inherit;    /* Inherit from parent (.game-wrapper or .board-wrapper) */
+  gap: 1px;
+  margin: 8px 0;
+}
+
 
 .tile.preview {
   min-width: 0;
@@ -248,27 +267,23 @@
 .tile.preview.has-letter {
   background-color: #ffffff;
   box-shadow: 0 0 0 1px #444 inset;
+
 }
 
-/* Animation for the next letter moving to spawn row */
-@keyframes moveToSpawn {
+/* Animation for the next letter falling straight down to spawn row */
+@keyframes fallToSpawn {
   0% {
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
     opacity: 1;
   }
-  50% {
-    transform: translateY(15px) scale(1.1);
-    opacity: 0.8;
-  }
   100% {
-    transform: translateY(30px) scale(0.8);
-    opacity: 0;
+    transform: translateY(70px); /* Adjust this value to match the distance to your spawn row */
+    opacity: 0.1;
   }
 }
 
-.tile.preview.moving-to-spawn {
-  animation: moveToSpawn 0.5s forwards;
-  z-index: 10; /* Ensure the animated tile appears above other elements */
+.tile.preview.has-letter.moving-to-spawn {
+  animation: fallToSpawn 0.2s forwards;
 }
 
 @keyframes hopIn {
@@ -281,18 +296,8 @@
   animation: hopIn 0.4s cubic-bezier(0.4, 0.8, 0.4, 1) both;
 }
 
-/* Outer wrapper around the play area (matches .game-board div in HTML) */
-.game-board {
-  height: 100%;                 /* take full height of .main-container (75vh) */
-  display: flex;
-  align-items: center;          /* center inner container vertically */
-  justify-content: center;
-  width: 100%;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
 
-/* Inner container that holds preview, spawn-row and the grid */
+/* Inner container that holds preview, tile-spawn-row and the grid */
 .game-board-container {
   height: 100%;
   display: flex;
