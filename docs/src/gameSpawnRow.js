@@ -2,26 +2,20 @@
  * Generates a 1x7 spawn row that aligns with the game board.
  * Each spawn tile is a div with classes and data attributes for column position.
  */
-export function createSpawnRow(cols = 7) {
-  const spawnRowContainer = document.getElementById('tile-spawn-row');
-  spawnRowContainer.innerHTML = ''; // Clear any previous spawn row
-
-  // Set dynamic grid template columns and rows
-  spawnRowContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-  spawnRowContainer.style.gridTemplateRows = '1fr';
-
-  for (let col = 0; col < cols; col++) {
-    const spawnTile = document.createElement('div');
-    spawnTile.className = 'tile spawn inactive'; // Start as inactive
-    spawnTile.dataset.col = col;
-    spawnRowContainer.appendChild(spawnTile);
-  }
-}
 
 export class SpawnRow {
-  constructor(spawnRowId = 'tile-spawn-row', cols = 7) {
+  constructor(spawnRowId = 'spawn-row', cols = 7) {
     this.spawnRowContainer = document.getElementById(spawnRowId);
     this.cols = cols;
+  }
+  setSpawnRowContent(letters, className = 'active') {
+    this.clearAllSpawnTiles();
+    for (let col = 0; col < this.cols; col++) {
+      if (letters[col]) {
+        this.setSpawnTileContent(col, letters[col].toUpperCase());
+        this.setSpawnTileClass(col, className);
+      }
+    }
   }
 
   getSpawnTileElement(col) {

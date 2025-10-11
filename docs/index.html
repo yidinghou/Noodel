@@ -7,33 +7,35 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <title>Noodle 🍝</title>
-    <link rel="stylesheet" href="styles/styles.css" />
-    <link rel="stylesheet" href="styles/themes.css" />
+    <link rel="stylesheet" href="styles/layout.css" />
+    <link rel="stylesheet" href="styles/tiles.css" />
+    <link rel="stylesheet" href="styles/game-header.css" />
   </head>
   <body>
-    <div class="game-wrapper">
-      <header class="game-header">
-        <h1 class="game-title">Noodel 🍝</h1>
-        <div class="score-container">
-          <h2 id="score">Score: <span>0</span></h2>
-          <h2 id="letters-remaining-container">
-            Letters Remaining: <span id="letters-remaining-counter">100</span>
-          </h2>
+    <header class="game-header">
+      <div class="game-title">
+            Noodel 🍝
+      </div>
+      <div class="start-btn-div">
+        <button class="start-btn">Start Game</button>
+      </div>
+      <div class="score-container">
+            <h2 id="score">Score: <span>0</span></h2>
+            <h2 id="letters-remaining-container">
+                Letters Remaining: <span id="letters-remaining-counter">100</span>
+            </h2>
+      </div>
+    </header>
+    <div class="main-container">
+      <div class="game-board-container">
+      </div>
+      <div class="made-words-wrapper">
+        <h2 class="made-words-header">Words Made</h2>
+        <div id="made-words-list" class="made-words-list">
+        <!-- Word list items will go here -->
         </div>
-        <button id="start-btn" class="start-btn">Start Game</button>
-      </header>
-
-      <div class="main-container">
-          <div class="game-board-container">
-            <div class="preview-panel">
-              <div id="pasta-placeholder" class="next-tiles"></div>
-              <div id="next-tiles-preview" class="next-tiles"></div>
-            </div>
-            <div id="tile-spawn-row"></div>
-            <div id="game-grid"></div>
-          </div>
+      </div>
     </div>
-
     <script type="module" src="./main.js"></script>
   </body>
 </html>

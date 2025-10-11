@@ -1,9 +1,5 @@
-/**
- * Generates a 6x7 HTML game board grid inside the #game-grid element.
- * Each tile is a div with classes and data attributes for row/col.
- */
 export function createGameBoard(rows = 6, cols = 7) {
-  const boardContainer = document.getElementById('game-grid');
+  const boardContainer = document.getElementById('game-board');
   boardContainer.innerHTML = ''; // Clear any previous board
 
   for (let row = 0; row < rows; row++) {
@@ -18,7 +14,7 @@ export function createGameBoard(rows = 6, cols = 7) {
 }
 
 export class GameBoard {
-  constructor(boardContainerId = 'game-grid', rows = 6, cols = 7) {
+  constructor(boardContainerId = 'game-board', rows = 6, cols = 7) {
     this.boardContainer = document.getElementById(boardContainerId);
     this.rows = rows;
     this.cols = cols;
