@@ -118,18 +118,35 @@ export class Game {
   }
 
   async handleBoardClick(col) {
-    // Find the currently hover-active spawn tile
-    const currentTile = document.querySelector('.tile.spawn.hover-active');
-    if (!currentTile || currentTile.textContent === '') return;
+    this.handleBoardHover(col); // Update hover state on click
+
+    // Cancel any ongoing animation if a new click occurs
+    if (this.isAnimating) {
+        this.renderer.cancelAnimation(); // Cancel the current animation
+        this.isAnimating = false;
+    }
+
+    // Immediately update the spawn row
+    const currentTile = this.spawnRow.getActiveSpawnTile();
+    if (!currentTile || currentTile.textContent === '') {
+        this.spawnRow.initialize(); // Ensure the spawn row is updated
+        return;
+    }
 
     const targetTile = this.gameBoard.getTileElement(5, col);
     if (!targetTile) return;
+
+    // Set the animation lock
+    this.isAnimating = true;
+
     // Animate the tile movement
     await this.renderer.animateTileMovement(currentTile, targetTile);
-    
-    //Clear the spawn tile after animation TOOD: move to something else
+
+    // Clear the spawn tile after animation
     currentTile.textContent = '';
-    
+    this.isAnimating = false;
+
+    // Check the spawn row status
     this.checkSpawnRowStatus();
 }
 

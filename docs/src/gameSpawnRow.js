@@ -7,23 +7,28 @@ export class SpawnRow {
     this.tiles = tiles; // row of tile element
     this.cols = tiles.length;
     this.observer = null; // will set Preview Container as observer
-    this.active_tile = null; // To store the currently active tile
   }
 
   initialize() {
-    this.clearAllSpawnTiles();
     if (!this.isFull()) {
       const preview  = this.observer
       const active_letter = preview.getNextLetter();
       this.setSpawnRowContent(active_letter);
 
-      for (let tile of this.tiles) {tile.className='tile spawn inactive';}
-
-      this.tiles[this.cols - 1].className = "tile spawn hover-active"; // Rightmost tile is hover-active
+      // Get the last tile and add both 'active' and 'hover' classes
+      const lastTile = this.tiles[this.tiles.length - 1];
+      if (lastTile) {
+          lastTile.classList.add('active');
+          lastTile.classList.add('hover');
+      }
 
       this.observer.clearNextTile();
       this.observer.fillPreviewTiles();
     }
+  }
+
+  getActiveSpawnTile() {
+    return this.tiles.find(tile => tile.classList.contains('active'));
   }
 
   countActiveSpawnTiles() {
@@ -34,12 +39,11 @@ export class SpawnRow {
     return this.countActiveSpawnTiles() === 1; // Only one active tile at a time
   }
   
-  setSpawnRowContent(letters, className = 'inactive') {
+  setSpawnRowContent(letters) {
     this.clearAllSpawnTiles();
     for (let col = 0; col < this.cols; col++) {
       if (letters) {
         this.setSpawnTileContent(col, letters.toUpperCase());
-        this.setSpawnTileClass(col, className);
       }
     }
   }
