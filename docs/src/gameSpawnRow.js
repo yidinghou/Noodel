@@ -1,25 +1,51 @@
-/**
- * Generates a 1x7 spawn row that aligns with the game board.
- * Each spawn tile is a div with classes and data attributes for column position.
- */
+import { Renderer } from "../src/renderer.js";
+
+const renderer = new Renderer();
 
 export class SpawnRow {
-  constructor(spawnRowId = 'spawn-row', cols = 7) {
-    this.spawnRowContainer = document.getElementById(spawnRowId);
-    this.cols = cols;
+  constructor(tiles) {
+    this.tiles = tiles; // row of tile element
+    this.cols = tiles.length;
+    this.observer = null; // will set Preview Container as observer
+    this.active_tile = null; // To store the currently active tile
   }
-  setSpawnRowContent(letters, className = 'active') {
+
+  initialize() {
+    this.clearAllSpawnTiles();
+    if (!this.isFull()) {
+      const preview  = this.observer
+      const active_letter = preview.getNextLetter();
+      this.setSpawnRowContent(active_letter);
+
+      for (let tile of this.tiles) {tile.className='tile spawn inactive';}
+
+      this.tiles[this.cols - 1].className = "tile spawn hover-active"; // Rightmost tile is hover-active
+
+      this.observer.clearNextTile();
+      this.observer.fillPreviewTiles();
+    }
+  }
+
+  countActiveSpawnTiles() {
+    return this.tiles.filter(tile => tile.textContent.trim() !== '').length;
+  }
+
+  isFull() {
+    return this.countActiveSpawnTiles() === 1; // Only one active tile at a time
+  }
+  
+  setSpawnRowContent(letters, className = 'inactive') {
     this.clearAllSpawnTiles();
     for (let col = 0; col < this.cols; col++) {
-      if (letters[col]) {
-        this.setSpawnTileContent(col, letters[col].toUpperCase());
+      if (letters) {
+        this.setSpawnTileContent(col, letters.toUpperCase());
         this.setSpawnTileClass(col, className);
       }
     }
   }
 
   getSpawnTileElement(col) {
-    return this.spawnRowContainer.querySelector(`.tile.spawn[data-col="${col}"]`);
+    return this.tiles[col];
   }
 
   setSpawnTileContent(col, content) { 
@@ -27,34 +53,26 @@ export class SpawnRow {
     if (tile) tile.textContent = content;
   }
 
-  clearSpawnTile(col) {
-    const tile = this.getSpawnTileElement(col);
-    if (tile) tile.textContent = '';
-  }
-
-  setSpawnTileClass(col, className) {
-    const tile = this.getSpawnTileElement(col);
-    if (tile) tile.className = `tile spawn ${className}`;
-  }
-
   clearAllSpawnTiles() {
     for (let col = 0; col < this.cols; col++) {
-      this.clearSpawnTile(col);
-      this.setSpawnTileClass(col, 'inactive');
+      const tile = this.getSpawnTileElement(col);
+      tile.className = 'tile inactive'; // Explicitly set the class
     }
   }
 
-    /**
+  /**
    * Updates the spawn tile in the spawn row with the given letter.
    * @param {string} letter - The letter to display in the spawn tile.
    */
-  updateSpawnTile(letter, className = 'active') {
+  updateSpawnTile(active_letter, className = 'active') {
     // Clear all spawn tiles first
     this.clearAllSpawnTiles();
-    
+
     // Set the letter in the rightmost column (column 6 for a 7-column board)
-    const rightmostCol = this.cols - 2;
-    this.setSpawnTileContent(rightmostCol, letter.toUpperCase());
+    const rightmostCol = 6;
+    this.setSpawnTileContent(rightmostCol, active_letter.toUpperCase());
     this.setSpawnTileClass(rightmostCol, className);
+
+    // Use the Renderer to animate the tile
   }
 }

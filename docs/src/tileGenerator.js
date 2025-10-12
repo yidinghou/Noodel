@@ -169,10 +169,7 @@ export class TileGenerator {
 
     // Return the current tile and increment the index
     const nextTile = this.tiles[this.currentIndex];
-    
-    // Notify observers about the change in upcoming tiles
-    this.notifyObservers();
-
+  
     this.currentIndex++;
 
     return nextTile;
@@ -183,7 +180,7 @@ export class TileGenerator {
    */
   reset() {
     this.generateTiles();
-    this.notifyObservers();
+    // this.notifyObservers();
   }
 
   /**

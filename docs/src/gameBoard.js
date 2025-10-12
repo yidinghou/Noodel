@@ -1,27 +1,20 @@
-export function createGameBoard(rows = 6, cols = 7) {
-  const boardContainer = document.getElementById('game-board');
-  boardContainer.innerHTML = ''; // Clear any previous board
-
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      const tile = document.createElement('div');
-      tile.className = 'tile board';
-      tile.dataset.row = row;
-      tile.dataset.col = col;
-      boardContainer.appendChild(tile);
-    }
-  }
-}
-
 export class GameBoard {
-  constructor(boardContainerId = 'game-board', rows = 6, cols = 7) {
-    this.boardContainer = document.getElementById(boardContainerId);
-    this.rows = rows;
-    this.cols = cols;
+  constructor(tiles) {
+    if (tiles.length !== 42) {
+      throw new Error("Invalid tiles list: Expected 42 tiles.");
+    }
+
+    // Convert the flat list of 42 tiles into a 7x6 grid (7 columns, 6 rows)
+    this.rows = 6;
+    this.cols = 7;
+    this.tiles = [];
+    for (let row = 0; row < this.rows; row++) {
+      this.tiles.push(tiles.slice(row * this.cols, row * this.cols + this.cols));
+    }
   }
 
   getTileElement(row, col) {
-    return this.boardContainer.querySelector(`.tile.board[data-row="${row}"][data-col="${col}"]`);
+    return this.tiles[row][col];
   }
 
   setTileContent(row, col, content) {
