@@ -259,12 +259,21 @@ export class Game {
     foundWords.forEach(word => {
       this.madeWords.push(word.letters); // Add to the internal list
 
-      // Create a new DOM element for the word and append it to the list
+      // Create a new DOM element for the word
       const wordElement = document.createElement('div');
       wordElement.className = 'made-word';
-      console.log(word); // Debugging: Check the structure of the word object
-      wordElement.textContent = word.letters; // Assuming `word.word` contains the actual word
-      madeWordsList.prepend(wordElement);
+      wordElement.textContent = word.letters; // Set the word text
+
+      // Fetch the definition of the word
+      const definition = this.wordValidator.dictionary.getDefinition(word.letters.toLowerCase());
+      if (definition) {
+        const definitionElement = document.createElement('div');
+        definitionElement.className = 'word-definition';
+        definitionElement.textContent = `Definition: ${definition}`;
+        wordElement.appendChild(definitionElement); // Add the definition as a child of the word element
+      }
+
+      madeWordsList.prepend(wordElement); // Prepend the word element to the list
     });
 
     const allPositions = foundWords.flatMap(word => word.positions);
