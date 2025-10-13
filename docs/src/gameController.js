@@ -44,10 +44,10 @@ export class Game {
     this.setupGameBoardInteraction();
 
     const previewTileRow = Array.from(document.querySelectorAll('.game-board-container .tile[data-row="0"]'));
-    this.previewContainer = new PreviewContainer(previewTileRow);
+    this.previewContainer = new PreviewContainer(previewTileRow, 3, this.renderer); // Pass the Renderer instance
 
     const spawnTileRow = Array.from(document.querySelectorAll('.game-board-container .tile[data-row="1"]'));
-    this.spawnRow = new SpawnRow(spawnTileRow);
+    this.spawnRow = new SpawnRow(spawnTileRow, this.renderer);
     this.spawnRow.observer = this.previewContainer;
 
     const gameBoardRows = Array.from(document.querySelectorAll('.game-board-container .tile[data-row="2"], .game-board-container .tile[data-row="3"], .game-board-container .tile[data-row="4"], .game-board-container .tile[data-row="5"], .game-board-container .tile[data-row="6"], .game-board-container .tile[data-row="7"]'));

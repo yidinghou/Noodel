@@ -40,7 +40,6 @@ export class Renderer {
 
     targetTile.classList.remove('hidden');
     targetTile.classList.add('locked')
-
    }
 
   animateTilesInOrder(tiles, animationClass = 'animate', delay = 80) {
@@ -55,35 +54,48 @@ export class Renderer {
     });
   }
 
-  async dropTileToSpawnRow(tile) {
-    if (!tile) return;
+  async animateFallToSpawnRow(previewTile, spawnTile) {
+    if (!previewTile || !spawnTile) return;
 
-    // Get the starting position of the tile
-    const tileRect = tile.getBoundingClientRect();
+    // Get the starting position of the preview tile
+    const previewRect = previewTile.getBoundingClientRect();
+    const spawnRect = spawnTile.getBoundingClientRect();
 
-    // Calculate the target position directly below
-    const targetY = tileRect.top + tileRect.height + 10; // Adjust as needed
+    // Hide the spawn tile initially
+    spawnTile.style.visibility = 'hidden';
 
-    // Create a clone for the animation
-    const clone = tile.cloneNode(true);
+    // Create a clone of the preview tile for animation
+    const clone = previewTile.cloneNode(true);
     clone.style.position = 'absolute';
-    clone.style.left = `${tileRect.left}px`;
-    clone.style.top = `${tileRect.top}px`;
-    clone.style.width = `${tileRect.width}px`;
-    clone.style.height = `${tileRect.height}px`;
+    clone.style.left = `${previewRect.left}px`;
+    clone.style.top = `${previewRect.top}px`;
+    clone.style.width = `${previewRect.width}px`;
+    clone.style.height = `${previewRect.height}px`;
     clone.style.transition = 'transform 0.5s ease-in-out';
     document.body.appendChild(clone);
 
-    // Apply the drop animation
-    requestAnimationFrame(() => {
-      clone.style.transform = `translateY(${targetY - tileRect.top}px)`;
+    // Step 1: Move the tile one step to the right in the preview row
+    const tileWidth = previewRect.width; // Assuming tiles are square
+    await new Promise((resolve) => {
+      requestAnimationFrame(() => {
+        clone.style.transform = `translate(${tileWidth}px, 0)`;
+      });
+      setTimeout(resolve, 500); // Wait for the horizontal animation to complete
     });
 
-    // Wait for the animation to complete
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    // Step 2: Drop the tile to the spawn row
+    await new Promise((resolve) => {
+      requestAnimationFrame(() => {
+        clone.style.transform = `translate(${spawnRect.left - previewRect.left}px, ${spawnRect.top - previewRect.top}px)`;
+      });
+      setTimeout(resolve, 500); // Wait for the vertical animation to complete
+    });
 
     // Remove the clone after animation
     document.body.removeChild(clone);
+
+    // Reveal the spawn tile after the animation
+    spawnTile.style.visibility = 'visible';
   }
 
   cancelAnimation() {

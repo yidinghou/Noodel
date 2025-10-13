@@ -1,25 +1,30 @@
-import { Renderer } from "../src/renderer.js";
-
-const renderer = new Renderer();
-
 export class SpawnRow {
-  constructor(tiles) {
+  constructor(tiles, renderer) {
     this.tiles = tiles; // row of tile element
     this.cols = tiles.length;
     this.observer = null; // will set Preview Container as observer
+    this.renderer = renderer;
   }
 
   initialize() {
     if (!this.isFull()) {
-      const preview  = this.observer
+      const preview = this.observer;
       const active_letter = preview.getNextLetter();
+
+      // Get the preview tile and spawn tile
+      const previewTile = preview.previewTiles[preview.previewCount - 1];
+      const spawnTile = this.getSpawnTileElement(this.cols - 1);
+
+      // Drop the tile from the preview to the spawn row with animation
+      this.renderer.animateFallToSpawnRow(previewTile, spawnTile);
+
       this.setSpawnRowContent(active_letter);
 
       // Get the last tile and add both 'active' and 'hover' classes
       const lastTile = this.tiles[this.tiles.length - 1];
       if (lastTile) {
-          lastTile.classList.add('active');
-          lastTile.classList.add('hover');
+        lastTile.classList.add('active');
+        lastTile.classList.add('hover');
       }
 
       this.observer.clearNextTile();

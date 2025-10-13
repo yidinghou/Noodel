@@ -7,15 +7,20 @@ const renderer = new Renderer();
  * Preview container that shows the upcoming N letters
  */
 export class PreviewContainer {
-  constructor(tiles, previewCount = 3) {
+  constructor(tiles, previewCount = 3, renderer) {
     this.tiles = tiles; // row of tile elements
     this.tileGenerator = new TileGenerator();
+    this.renderer = renderer; // Pass the Renderer instance
+
+    if (!this.renderer) {
+      console.error("Renderer instance is not defined. Ensure it is passed to PreviewContainer.");
+    }
 
     this.tileGenerator.tiles = ["R", "O", "E"];
     this.active_letter = null; // To store the currently active letter
       
     this.previewCount = previewCount;
-    this.previewTiles = tiles.slice(-this.previewCount);
+    this.previewTiles = tiles.slice(-this.previewCount-1);
     this.observer = null; // will set Spawn Row as observer
   }
 
@@ -57,17 +62,29 @@ export class PreviewContainer {
     this.tileGenerator.reset();
   }
 
-  updatePreview(newLetter) {
-      // Shift tiles down the preview list (offset by 2)
-      for (let i = this.previewCount - 1; i > 0; i--) {
-          this.previewTiles[i].textContent = this.previewTiles[i - 1].textContent;
-          this.updateTileState(this.previewTiles[i]);
-      }
-  
-      // Update the first tile with the new letter
-      this.previewTiles[0].textContent = newLetter;
-      this.updateTileState(this.previewTiles[0]); // Ensure the first tile is updated}
+  // Method to animate preview tiles
+  animatePreviewTiles(animationClass = "animate", delay = 80) {
+    if (!this.renderer) {
+      console.error("Renderer instance is not defined. Cannot animate tiles.");
+      return;
+    }
+    console.log("Animating tiles with renderer:", this.renderer);
+    this.renderer.animateTilesInOrder(this.previewTiles, animationClass, delay);
+  }
 
+  updatePreview(newLetter) {
+    // Shift tiles down the preview list (offset by 2)
+    for (let i = this.previewCount - 1; i > 0; i--) {
+        this.previewTiles[i].textContent = this.previewTiles[i - 1].textContent;
+        this.updateTileState(this.previewTiles[i]);
+    }
+  
+    // Update the first tile with the new letter
+    this.previewTiles[0].textContent = newLetter;
+    this.updateTileState(this.previewTiles[0]); // Ensure the first tile is updated}
+
+    // Trigger animation for the updated preview tiles
+    this.animatePreviewTiles();
   }
   /**
    * Updates the state of a tile based on its text content.
