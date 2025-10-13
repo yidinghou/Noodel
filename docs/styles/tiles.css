@@ -100,3 +100,14 @@
 .hover {
   background-color: rgba(0, 255, 0, 0.3); /* Example hover effect */
 }
+
+
+.tile.board.hidden{
+  color: transparent;
+}
+
+/* Locked tile style - gray background with white text */
+.tile.board.locked {
+  background: #6c757d;
+  color: white;
+}

@@ -1,7 +1,7 @@
 export class Renderer {
   constructor() {}
 
-  async animateTileMovement(tile, targetTile) {
+  async animateTileMovement(tile, targetTile, rowsDropped) {
     if (!tile || !targetTile) return;
     tile.classList.remove('hover'); // Remove hover state if present
     tile.classList.remove('active'); // Remove active state if present
@@ -23,7 +23,7 @@ export class Renderer {
     document.body.appendChild(clone);
 
     // Calculate the translation steps
-    const steps = 5; // Number of stop-motion steps
+    const steps = Math.max(rowsDropped, 1); // Number of stop-motion steps
     const deltaX = (targetRect.left - tileRect.left) / steps;
     const deltaY = (targetRect.top - tileRect.top) / steps;
 
@@ -37,6 +37,9 @@ export class Renderer {
 
     // Remove the clone after animation
     document.body.removeChild(clone);
+
+    targetTile.classList.remove('hidden');
+    targetTile.classList.add('locked')
 
    }
 

@@ -11,7 +11,7 @@ export class PreviewContainer {
     this.tiles = tiles; // row of tile elements
     this.tileGenerator = new TileGenerator();
 
-    this.tileGenerator.tiles = ['1','2','3','4','5','6','7','8','9'];
+    this.tileGenerator.tiles = ["R", "O", "E"];
     this.active_letter = null; // To store the currently active letter
       
     this.previewCount = previewCount;

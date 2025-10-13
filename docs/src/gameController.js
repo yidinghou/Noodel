@@ -27,12 +27,14 @@ import { PreviewContainer} from "./gamePreviewContainer.js";
 import {SpawnRow} from "./gameSpawnRow.js";
 import {GameBoard} from "./gameBoard.js";
 import { Renderer } from "../src/renderer.js";
+import { WordValidator } from "./wordValidator.js"; // Import WordValidator
 export class Game {
   constructor() {
     this.renderer = new Renderer();
     this.active_letter = null; // To store the currently active letter
     this.isAnimating = false; // Lock for animations
     this.dropQueue = []; // Queue to handle multiple tile drops
+    this.wordValidator = new WordValidator(); // Initialize WordValidator
   }
 
   async init() {
@@ -48,6 +50,8 @@ export class Game {
 
     const gameBoardRows = Array.from(document.querySelectorAll('.game-board-container .tile[data-row="2"], .game-board-container .tile[data-row="3"], .game-board-container .tile[data-row="4"], .game-board-container .tile[data-row="5"], .game-board-container .tile[data-row="6"], .game-board-container .tile[data-row="7"]'));
     this.gameBoard = new GameBoard(gameBoardRows);
+  
+    await this.wordValidator.init();
 
   }
 
@@ -148,7 +152,8 @@ export class Game {
         this.isAnimating = false;
         return; // No active tile to drop
     }
-
+    
+    const startingRow = parseInt(currentTile.dataset.row, 10); // Get the starting row index
     const targetPos = this.gameBoard.getLowestEmptyRow(col);
     if (targetPos === -1) {
         console.log("Column is full. Cannot place tile.");
@@ -164,22 +169,87 @@ export class Game {
 
     // Set the content of the target tile
     targetTile.textContent = currentTile.textContent; // TODO: add hidden State
+    targetTile.classList.add('hidden');
 
     // Skip animation if there are more clicks in the queue
     if (this.dropQueue.length > 0) {
         console.log("Skipping animation due to multiple clicks.");
     } else {
         // Animate the tile movement
-        await this.renderer.animateTileMovement(currentTile, targetTile);
+        const rowsDropped = targetPos - startingRow; // Calculate rows dropped
+        await this.renderer.animateTileMovement(currentTile, targetTile, rowsDropped);
     }
 
     // Clear the spawn tile after animation
-    currentTile.textContent = '';
+    this.spawnRow.clearAllSpawnTiles();
     this.isAnimating = false;
+
+    // Check for words and animate their removal
+    await this.checkForWordsAndAnimate(targetPos, col);
 
     // Check the spawn row status
     this.checkSpawnRowStatus();
-}
+  }
+
+  /**
+   * Checks for valid words and animates their removal with gravity
+   * @param {number} row - Row where tile was placed
+   * @param {number} col - Column where tile was placed
+   */
+  async checkForWordsAndAnimate(row, col) {
+    await this._resolveAndAnimateChains([[row, col]]);
+  }
+
+  async _resolveAndAnimateChains(startPositions) {
+    const dedupePositions = (positions) =>
+      [...new Set(positions.map(p => JSON.stringify(p)))].map(s => JSON.parse(s));
+
+    let positionsToCheck = dedupePositions(startPositions);
+    
+    // run this loop while there are still words being found
+    while (positionsToCheck.length > 0) {
+      // Part 1: Find words and collect their data
+      const wordData = this._findAndProcessWords(positionsToCheck);
+      if (!wordData) break; // No more words found, exit loop
+
+      const { allPositions, affectedColumns } = wordData;
+      const uniquePositions = dedupePositions(allPositions);
+
+      // Animate removal and apply gravity
+      await this.gameBoard.animateWordFound(uniquePositions, 600, true);
+
+      // Part 2: Get all tiles in affected columns for the next check
+      positionsToCheck = this._getNextPositionsToCheck(affectedColumns, dedupePositions);
+
+      // Optional small delay for visual clarity between chains
+      if (positionsToCheck.length > 0) {
+        await sleep(100);
+      }
+    }
+  }
+
+  _findAndProcessWords(positionsToCheck) {
+    const foundWords = this.wordValidator.findWordsAt(this.gameBoard, positionsToCheck);
+    if (!foundWords || foundWords.length === 0) {
+      return null;
+    }
+
+    console.log(`Processing ${foundWords.length} total words`);
+
+    const allPositions = foundWords.flatMap(word => word.positions);
+    const affectedColumns = new Set(allPositions.map(pos => pos[1]));
+
+    return { allPositions, affectedColumns };
+  }
+
+  _getNextPositionsToCheck(affectedColumns, dedupeFunc) {
+    const nextPositions = [...affectedColumns].flatMap(col => {
+      const filled = this.gameBoard.countTilesPerColumn(col);
+      // Create an array of row indices for the filled tiles in the column
+      return Array.from({ length: filled }, (_, i) => [this.rows - 1 - i, col]);
+    });
+    return dedupeFunc(nextPositions);
+  }
 
   checkSpawnRowStatus() {
       // Check the state
