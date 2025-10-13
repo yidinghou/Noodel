@@ -287,7 +287,45 @@ export class Game {
     wordElement.innerHTML = `<strong>${word.letters}</strong>: ${definition || 'No definition available'}`;
 
     madeWordsList.prepend(wordElement); // Prepend the word element to the list
+    this.playMadeWordSound(word.letters.length); // Play sound based on word length
   }
+
+  
+
+  playMadeWordSound(word_length) {
+    const madeWordSound1 = new Audio('./src/sounds/word-made-1.mp3');
+    const madeWordSound2 = new Audio('./src/sounds/word-made-2.mp3');
+    const madeWordSound3 = new Audio('./src/sounds/word-made-3.mp3');
+    const madeWordSpecial = new Audio('./src/sounds/word-made-special.mp3');
+
+    // Define sounds with their weights
+    const sounds = [
+        { sound: madeWordSpecial, weight: word_length >= 4 ? 0.6 : 0.1 }, // Higher weight for special sound if word length >= 4
+        { sound: madeWordSound1, weight: 0.1 },
+        { sound: madeWordSound2, weight: 0.1 },
+        { sound: madeWordSound3, weight: 0.1 }
+    ];
+
+    // Normalize weights to ensure they sum to 1
+    const totalWeight = sounds.reduce((sum, { weight }) => sum + weight, 0);
+    const normalizedSounds = sounds.map(({ sound, weight }) => ({
+        sound,
+        weight: weight / totalWeight
+    }));
+
+    // Generate a random number between 0 and 1
+    const random = Math.random();
+    let cumulativeWeight = 0;
+
+    // Select the sound based on the random number and normalized weights
+    for (const { sound, weight } of normalizedSounds) {
+        cumulativeWeight += weight;
+        if (random < cumulativeWeight) {
+            sound.play();
+            break;
+        }
+    }
+}
 
   _getNextPositionsToCheck(affectedColumns, dedupeFunc) {
     const nextPositions = [...affectedColumns].flatMap(col => {
