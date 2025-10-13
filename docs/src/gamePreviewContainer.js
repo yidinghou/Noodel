@@ -16,7 +16,6 @@ export class PreviewContainer {
       console.error("Renderer instance is not defined. Ensure it is passed to PreviewContainer.");
     }
 
-    this.tileGenerator.tiles = ["R", "O", "E"];
     this.active_letter = null; // To store the currently active letter
       
     this.previewCount = previewCount;

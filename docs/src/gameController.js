@@ -143,6 +143,13 @@ export class Game {
         return;
     }
 
+    // Decrease the letters remaining counter
+    const lettersRemainingCounter = document.getElementById('letters-remaining-counter');
+    const currentCount = parseInt(lettersRemainingCounter.textContent, 10);
+    if (!isNaN(currentCount) && currentCount > 0) {
+        lettersRemainingCounter.textContent = currentCount - 1;
+    }
+
     // Process the queue
     while (this.dropQueue.length > 0) {
         const nextCol = this.dropQueue.shift(); // Get the next column from the queue

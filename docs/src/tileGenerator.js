@@ -164,7 +164,7 @@ export class TileGenerator {
   getNextTile() {
     // If we've exhausted the current batch, wrap around to the beginning
     if (this.currentIndex >= this.tiles.length) {
-      this.currentIndex = 0;
+      return "No mo tiles"
     }
 
     // Return the current tile and increment the index
@@ -172,7 +172,7 @@ export class TileGenerator {
   
     this.currentIndex++;
 
-    return nextTile;
+    return nextTile.toUpperCase();
   }
 
   /**
