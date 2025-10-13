@@ -68,7 +68,14 @@ export class Game {
     this.previewContainer.initialize();
     this.spawnRow.initialize();
     this.isGameStarted = true; // Enable hover listeners when the game starts
-  }
+
+    // Set the letters remaining counter to the length of the preview tiles
+    const lettersRemainingCounter = document.getElementById('letters-remaining-counter');
+    if (lettersRemainingCounter) {
+        const previewTilesLength = this.previewContainer.tileGenerator.tileCount;
+        lettersRemainingCounter.textContent = previewTilesLength;
+    }
+}
     
   async resetButtonAction(){
     this.previewContainer.reset();

@@ -9,7 +9,7 @@ const renderer = new Renderer();
 export class PreviewContainer {
   constructor(tiles, previewCount = 3, renderer) {
     this.tiles = tiles; // row of tile elements
-    this.tileGenerator = new TileGenerator();
+    this.tileGenerator = new TileGenerator(100);
     this.renderer = renderer; // Pass the Renderer instance
 
     if (!this.renderer) {
