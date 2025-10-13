@@ -37,6 +37,13 @@ export class Game {
     this.wordValidator = new WordValidator(); // Initialize WordValidator
     this.isGameStarted = false; // Flag to track if the game has started
     this.madeWords = []; // Internal list to keep track of made words
+    this.isSoundMuted = false; // Track if sound is muted
+
+    // Add event listener for the sound toggle button
+    const soundToggleButton = document.getElementById('sound-toggle');
+    if (soundToggleButton) {
+        soundToggleButton.addEventListener('click', () => this.toggleSound());
+    }
   }
 
   async init() {
@@ -136,8 +143,10 @@ export class Game {
   }
 
   async handleBoardClick(col) {
-    const dropSound = new Audio('./src/sounds/tile-drop.mp3');
-    dropSound.play();
+    if (!this.isSoundMuted) {
+      const dropSound = new Audio('./src/sounds/tile-drop.mp3');
+      dropSound.play();
+    }
 
     // Add the column to the drop queue
     this.dropQueue.push(col);
@@ -291,32 +300,45 @@ export class Game {
     this.playMadeWordSound(word.letters.length); // Play sound based on word length
   }
 
+  toggleSound() {
+    this.isSoundMuted = !this.isSoundMuted; // Toggle the sound state
+
+    // Update the button text
+    const soundToggleButton = document.getElementById('sound-toggle');
+    if (soundToggleButton) {
+        soundToggleButton.textContent = this.isSoundMuted ? 'Unmute' : 'Mute';
+    }
+
+    console.log(`Sound is now ${this.isSoundMuted ? 'muted' : 'unmuted'}.`);
+}
+
   playMadeWordSound(word_length) {
+    if (this.isSoundMuted) {
+        console.log('Sound is muted. No sound will be played.');
+        return; // Prevent any sound from playing if muted
+    }
+
     const madeWordSound1 = new Audio('./src/sounds/word-made-1.mp3');
     const madeWordSound2 = new Audio('./src/sounds/word-made-2.mp3');
     const madeWordSound3 = new Audio('./src/sounds/word-made-3.mp3');
     const madeWordSpecial = new Audio('./src/sounds/word-made-special.mp3');
 
-    // Define sounds with their weights
     const sounds = [
-        { sound: madeWordSpecial, weight: word_length >= 4 ? 0.8: 0 }, // Higher weight for special sound if word length >= 4
+        { sound: madeWordSpecial, weight: word_length >= 4 ? 0.6 : 0.1 },
         { sound: madeWordSound1, weight: 0.1 },
         { sound: madeWordSound2, weight: 0.1 },
         { sound: madeWordSound3, weight: 0.1 }
     ];
 
-    // Normalize weights to ensure they sum to 1
     const totalWeight = sounds.reduce((sum, { weight }) => sum + weight, 0);
     const normalizedSounds = sounds.map(({ sound, weight }) => ({
         sound,
         weight: weight / totalWeight
     }));
 
-    // Generate a random number between 0 and 1
     const random = Math.random();
     let cumulativeWeight = 0;
 
-    // Select the sound based on the random number and normalized weights
     for (const { sound, weight } of normalizedSounds) {
         cumulativeWeight += weight;
         if (random < cumulativeWeight) {
