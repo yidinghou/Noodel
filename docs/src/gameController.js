@@ -36,6 +36,7 @@ export class Game {
     this.dropQueue = []; // Queue to handle multiple tile drops
     this.wordValidator = new WordValidator(); // Initialize WordValidator
     this.isGameStarted = false; // Flag to track if the game has started
+    this.madeWords = []; // Internal list to keep track of made words
   }
 
   async init() {
@@ -252,6 +253,19 @@ export class Game {
     }
 
     console.log(`Processing ${foundWords.length} total words`);
+
+    // Add found words to the made words list and update the DOM
+    const madeWordsList = document.getElementById('made-words-list'); // Get the HTML element for the word list
+    foundWords.forEach(word => {
+      this.madeWords.push(word.letters); // Add to the internal list
+
+      // Create a new DOM element for the word and append it to the list
+      const wordElement = document.createElement('div');
+      wordElement.className = 'made-word';
+      console.log(word); // Debugging: Check the structure of the word object
+      wordElement.textContent = word.letters; // Assuming `word.word` contains the actual word
+      madeWordsList.appendChild(wordElement);
+    });
 
     const allPositions = foundWords.flatMap(word => word.positions);
     const affectedColumns = new Set(allPositions.map(pos => pos[1]));
