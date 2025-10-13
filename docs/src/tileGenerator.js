@@ -179,8 +179,7 @@ export class TileGenerator {
    * Resets the sequence to the beginning by generating a fresh batch of tiles.
    */
   reset() {
-    this.generateTiles();
-    // this.notifyObservers();
+    this.currentIndex = 0; // Reset index to the start of the new sequence
   }
 
   /**

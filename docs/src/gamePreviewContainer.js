@@ -53,6 +53,8 @@ export class PreviewContainer {
       tile.classList.remove('active');
       tile.classList.add('inactive');
     });
+
+    this.tileGenerator.reset();
   }
 
   updatePreview(newLetter) {
