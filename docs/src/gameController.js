@@ -264,7 +264,7 @@ export class Game {
       wordElement.className = 'made-word';
       console.log(word); // Debugging: Check the structure of the word object
       wordElement.textContent = word.letters; // Assuming `word.word` contains the actual word
-      madeWordsList.appendChild(wordElement);
+      madeWordsList.prepend(wordElement);
     });
 
     const allPositions = foundWords.flatMap(word => word.positions);
