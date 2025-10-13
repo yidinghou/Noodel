@@ -68,6 +68,7 @@ export class Game {
     this.gameBoard.resetBoard();
     await sleep(200);
     this.isGameStarted = false; // Disable hover listeners during reset
+    this.clearMadeWords();
     this.startButtonAction();
   }
   
@@ -290,8 +291,6 @@ export class Game {
     this.playMadeWordSound(word.letters.length); // Play sound based on word length
   }
 
-  
-
   playMadeWordSound(word_length) {
     const madeWordSound1 = new Audio('./src/sounds/word-made-1.mp3');
     const madeWordSound2 = new Audio('./src/sounds/word-made-2.mp3');
@@ -348,5 +347,15 @@ export class Game {
       }
   }
 
+  clearMadeWords() {
+    this.madeWords = []; // Clear the internal list of made words
+
+    const madeWordsList = document.getElementById('made-words-list');
+    if (madeWordsList) {
+        madeWordsList.innerHTML = ''; // Clear the DOM element displaying the made words
+    }
+
+    console.log("Made words list cleared.");
+}
 
 }
