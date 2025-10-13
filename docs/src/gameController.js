@@ -135,6 +135,9 @@ export class Game {
   }
 
   async handleBoardClick(col) {
+    const dropSound = new Audio('./src/sounds/tile-drop.mp3');
+    dropSound.play();
+
     // Add the column to the drop queue
     this.dropQueue.push(col);
 
