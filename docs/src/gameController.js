@@ -258,28 +258,31 @@ export class Game {
     const madeWordsList = document.getElementById('made-words-list'); // Get the HTML element for the word list
     foundWords.forEach(word => {
       this.madeWords.push(word.letters); // Add to the internal list
-
-      // Create a new DOM element for the word
-      const wordElement = document.createElement('div');
-      wordElement.className = 'made-word';
-      wordElement.textContent = word.letters; // Set the word text
-
-      // Fetch the definition of the word
-      const definition = this.wordValidator.dictionary.getDefinition(word.letters.toLowerCase());
-      if (definition) {
-        const definitionElement = document.createElement('div');
-        definitionElement.className = 'word-definition';
-        definitionElement.textContent = `Definition: ${definition}`;
-        wordElement.appendChild(definitionElement); // Add the definition as a child of the word element
-      }
-
-      madeWordsList.prepend(wordElement); // Prepend the word element to the list
+      this._addWordToDOM(word, madeWordsList); // Refactored into a separate function
     });
 
     const allPositions = foundWords.flatMap(word => word.positions);
     const affectedColumns = new Set(allPositions.map(pos => pos[1]));
 
     return { allPositions, affectedColumns };
+  }
+
+  _addWordToDOM(word, madeWordsList) {
+    // Create a new DOM element for the word
+    const wordElement = document.createElement('div');
+    wordElement.className = 'made-word';
+    wordElement.textContent = word.letters; // Set the word text
+
+    // Fetch the definition of the word
+    const definition = this.wordValidator.dictionary.getDefinition(word.letters.toLowerCase());
+    if (definition) {
+      const definitionElement = document.createElement('div');
+      definitionElement.className = 'word-definition';
+      definitionElement.textContent = `Definition: ${definition}`;
+      wordElement.appendChild(definitionElement); // Add the definition as a child of the word element
+    }
+
+    madeWordsList.prepend(wordElement); // Prepend the word element to the list
   }
 
   _getNextPositionsToCheck(affectedColumns, dedupeFunc) {
