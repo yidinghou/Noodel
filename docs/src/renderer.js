@@ -3,7 +3,8 @@ export class Renderer {
 
   async animateTileMovement(tile, targetTile) {
     if (!tile || !targetTile) return;
-    tile.classList.remove('hover-active'); // Remove hover state if present
+    tile.classList.remove('hover'); // Remove hover state if present
+    tile.classList.remove('active'); // Remove active state if present
     tile.classList.add('inactive'); // Make the tile inactive during animation
 
     // Get the starting and ending positions
@@ -13,6 +14,7 @@ export class Renderer {
     // Create a clone of the tile for animation
     const clone = tile.cloneNode(true);
     clone.classList.remove('inactive');
+    clone.classList.remove('hover');
     clone.classList.add('tile-falling'); // Use the CSS class for styles
     clone.style.left = `${tileRect.left}px`;
     clone.style.top = `${tileRect.top}px`;
