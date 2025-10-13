@@ -299,7 +299,7 @@ export class Game {
 
     // Define sounds with their weights
     const sounds = [
-        { sound: madeWordSpecial, weight: word_length >= 4 ? 0.6 : 0.1 }, // Higher weight for special sound if word length >= 4
+        { sound: madeWordSpecial, weight: word_length >= 4 ? 0.8: 0 }, // Higher weight for special sound if word length >= 4
         { sound: madeWordSound1, weight: 0.1 },
         { sound: madeWordSound2, weight: 0.1 },
         { sound: madeWordSound3, weight: 0.1 }
