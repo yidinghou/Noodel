@@ -13,6 +13,15 @@ export class GameBoard {
     }
   }
 
+  getLowestEmptyRow(col) {
+    for (let row = this.rows - 1; row >= 0; row--) {
+        const tile = this.getTileElement(row, col);
+        if (tile && tile.textContent.trim() === '') {
+            return row; // Return the first empty row from the bottom
+        }
+    }
+    return -1; // Return -1 if the column is full
+  }
   getTileElement(row, col) {
     return this.tiles[row][col];
   }

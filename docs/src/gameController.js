@@ -31,6 +31,8 @@ export class Game {
   constructor() {
     this.renderer = new Renderer();
     this.active_letter = null; // To store the currently active letter
+    this.isAnimating = false; // Lock for animations
+    this.dropQueue = []; // Queue to handle multiple tile drops
   }
 
   async init() {
@@ -56,6 +58,7 @@ export class Game {
     
   async resetButtonAction(){
     this.previewContainer.reset();
+    this.gameBoard.resetBoard();
     await sleep(200);
     this.startButtonAction();
   }
@@ -118,29 +121,57 @@ export class Game {
   }
 
   async handleBoardClick(col) {
-    this.handleBoardHover(col); // Update hover state on click
+    // Add the column to the drop queue
+    this.dropQueue.push(col);
 
-    // Cancel any ongoing animation if a new click occurs
+    // If an animation is already in progress, skip to the next animation
     if (this.isAnimating) {
-        this.renderer.cancelAnimation(); // Cancel the current animation
-        this.isAnimating = false;
-    }
-
-    // Immediately update the spawn row
-    const currentTile = this.spawnRow.getActiveSpawnTile();
-    if (!currentTile || currentTile.textContent === '') {
-        this.spawnRow.initialize(); // Ensure the spawn row is updated
         return;
     }
 
-    const targetTile = this.gameBoard.getTileElement(5, col);
-    if (!targetTile) return;
+    // Process the queue
+    while (this.dropQueue.length > 0) {
+        const nextCol = this.dropQueue.shift(); // Get the next column from the queue
+        await this.processTileDrop(nextCol); // Wait for the current drop to complete
+    }
+}
 
-    // Set the animation lock
-    this.isAnimating = true;
+  async processTileDrop(col) {
+    this.isAnimating = true; // Lock the animation
 
-    // Animate the tile movement
-    await this.renderer.animateTileMovement(currentTile, targetTile);
+    this.handleBoardHover(col); // Update hover state on click
+
+    // Immediately update the spawn row
+    const currentTile = this.spawnRow.getActiveSpawnTile();
+    if (!currentTile) {
+        console.log("No active tile in the spawn row.");
+        this.isAnimating = false;
+        return; // No active tile to drop
+    }
+
+    const targetPos = this.gameBoard.getLowestEmptyRow(col);
+    if (targetPos === -1) {
+        console.log("Column is full. Cannot place tile.");
+        this.isAnimating = false;
+        return; // Column is full, do nothing
+    }
+
+    const targetTile = this.gameBoard.getTileElement(targetPos, col);
+    if (!targetTile) {
+        this.isAnimating = false;
+        return;
+    }
+
+    // Set the content of the target tile
+    targetTile.textContent = currentTile.textContent; // TODO: add hidden State
+
+    // Skip animation if there are more clicks in the queue
+    if (this.dropQueue.length > 0) {
+        console.log("Skipping animation due to multiple clicks.");
+    } else {
+        // Animate the tile movement
+        await this.renderer.animateTileMovement(currentTile, targetTile);
+    }
 
     // Clear the spawn tile after animation
     currentTile.textContent = '';

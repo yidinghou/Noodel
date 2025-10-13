@@ -36,8 +36,6 @@ export class Renderer {
     // Remove the clone after animation
     document.body.removeChild(clone);
 
-    // Update the target tile content
-    targetTile.textContent = tile.textContent;
    }
 
   animateTilesInOrder(tiles, animationClass = 'animate', delay = 80) {
@@ -81,5 +79,12 @@ export class Renderer {
 
     // Remove the clone after animation
     document.body.removeChild(clone);
+  }
+
+  cancelAnimation() {
+    if (this.currentAnimation) {
+        this.currentAnimation.cancel(); // Cancel the ongoing animation
+        this.currentAnimation = null;
+    }
   }
 }
