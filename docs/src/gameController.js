@@ -35,6 +35,7 @@ export class Game {
     this.isAnimating = false; // Lock for animations
     this.dropQueue = []; // Queue to handle multiple tile drops
     this.wordValidator = new WordValidator(); // Initialize WordValidator
+    this.isGameStarted = false; // Flag to track if the game has started
   }
 
   async init() {
@@ -58,12 +59,14 @@ export class Game {
   startButtonAction(){
     this.previewContainer.initialize();
     this.spawnRow.initialize();
+    this.isGameStarted = true; // Enable hover listeners when the game starts
   }
     
   async resetButtonAction(){
     this.previewContainer.reset();
     this.gameBoard.resetBoard();
     await sleep(200);
+    this.isGameStarted = false; // Disable hover listeners during reset
     this.startButtonAction();
   }
   
@@ -72,6 +75,8 @@ export class Game {
 
     // Add click event to the game board container
     gameBoardContainer.addEventListener('click', (event) => {
+      if (!this.isGameStarted) return; // Ignore clicks if the game hasn't started
+
       const tile = event.target.closest('.tile');
       if (!tile) return;
 
@@ -83,6 +88,8 @@ export class Game {
 
     // Add hover event listeners
     gameBoardContainer.addEventListener('mouseover', (event) => {
+      if (!this.isGameStarted) return; // Ignore hover if the game hasn't started
+
       const tile = event.target.closest('.tile');
       if (!tile) return;
 
@@ -93,6 +100,8 @@ export class Game {
     });
 
     gameBoardContainer.addEventListener('mouseout', (event) => {
+      if (!this.isGameStarted) return; // Ignore hover if the game hasn't started
+
       const tile = event.target.closest('.tile');
       if (!tile) return;
 
@@ -205,12 +214,15 @@ export class Game {
       [...new Set(positions.map(p => JSON.stringify(p)))].map(s => JSON.parse(s));
 
     let positionsToCheck = dedupePositions(startPositions);
-    
-    // run this loop while there are still words being found
+
+    // Run this loop while there are still words being found
     while (positionsToCheck.length > 0) {
       // Part 1: Find words and collect their data
       const wordData = this._findAndProcessWords(positionsToCheck);
-      if (!wordData) break; // No more words found, exit loop
+      if (!wordData) {
+        console.log("No more words found. Exiting chain resolution.");
+        break; // No more words found, exit loop
+      }
 
       const { allPositions, affectedColumns } = wordData;
       const uniquePositions = dedupePositions(allPositions);
@@ -219,6 +231,11 @@ export class Game {
       await this.gameBoard.animateWordFound(uniquePositions, 600, true);
 
       // Part 2: Get all tiles in affected columns for the next check
+      if (affectedColumns.size === 0) {
+        console.log("No affected columns. Exiting chain resolution.");
+        break;
+      }
+
       positionsToCheck = this._getNextPositionsToCheck(affectedColumns, dedupePositions);
 
       // Optional small delay for visual clarity between chains
@@ -245,8 +262,12 @@ export class Game {
   _getNextPositionsToCheck(affectedColumns, dedupeFunc) {
     const nextPositions = [...affectedColumns].flatMap(col => {
       const filled = this.gameBoard.countTilesPerColumn(col);
+      if (!filled) {
+        console.log(`Column ${col} is empty.`);
+        return [];
+      }
       // Create an array of row indices for the filled tiles in the column
-      return Array.from({ length: filled }, (_, i) => [this.rows - 1 - i, col]);
+      return Array.from({ length: filled }, (_, i) => [this.gameBoard.rows - 1 - i, col]);
     });
     return dedupeFunc(nextPositions);
   }
