@@ -268,19 +268,13 @@ export class Game {
   }
 
   _addWordToDOM(word, madeWordsList) {
-    // Create a new DOM element for the word
+    // Create a new DOM element for the word and definition
     const wordElement = document.createElement('div');
     wordElement.className = 'made-word';
-    wordElement.textContent = word.letters; // Set the word text
 
-    // Fetch the definition of the word
+    // Format the word and definition
     const definition = this.wordValidator.dictionary.getDefinition(word.letters.toLowerCase());
-    if (definition) {
-      const definitionElement = document.createElement('div');
-      definitionElement.className = 'word-definition';
-      definitionElement.textContent = `Definition: ${definition}`;
-      wordElement.appendChild(definitionElement); // Add the definition as a child of the word element
-    }
+    wordElement.innerHTML = `<strong>${word.letters}</strong>: ${definition || 'No definition available'}`;
 
     madeWordsList.prepend(wordElement); // Prepend the word element to the list
   }
