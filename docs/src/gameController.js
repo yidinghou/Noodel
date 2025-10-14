@@ -283,10 +283,9 @@ export class Game {
 
     // Add found words to the made words list and update the DOM
     const madeWordsList = document.getElementById('made-words-list'); // Get the HTML element for the word list
-    foundWords.forEach(word => {
-      this.madeWords.push(word.letters); // Add to the internal list
-      this._addWordToDOM(word, madeWordsList); // Refactored into a separate function
-    });
+    const longestWord = foundWords.slice(-1)[0];
+    this.madeWords.push(longestWord.letters); // Add to the internal list
+    this._addWordToDOM(longestWord, madeWordsList); // Refactored into a separate function
 
     const allPositions = foundWords.flatMap(word => word.positions);
     const affectedColumns = new Set(allPositions.map(pos => pos[1]));
