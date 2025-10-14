@@ -330,7 +330,7 @@ export class Game {
     const madeWordSpecial = new Audio('./src/sounds/word-made-special.mp3');
 
     const sounds = [
-        { sound: madeWordSpecial, weight: word_length >= 4 ? 0.6 : 0.1 },
+        { sound: madeWordSpecial, weight: word_length >= 4 ? 0.6 : 0 },
         { sound: madeWordSound1, weight: 0.1 },
         { sound: madeWordSound2, weight: 0.1 },
         { sound: madeWordSound3, weight: 0.1 }
