@@ -1,0 +1,119 @@
+/* Responsive Layout for Wordtris */
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  min-width: 300px;
+}
+
+.game-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto 8px auto;
+  text-align: center;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  height: 75vh;
+  box-sizing: border-box;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.game-board-container {
+  aspect-ratio: 7 / 8;
+  max-width: 65%;
+  max-height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  background: #f8f8ff;
+  padding: 0;
+  gap: 0;
+  box-sizing: border-box;
+}
+
+.made-words-wrapper {
+  flex: 1 1 auto;
+  min-width: 200px;
+  max-width: 230px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border-radius: 1rem;
+  box-sizing: border-box;
+  padding: 1rem;
+  overflow: auto;
+}
+
+.made-words-header {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.made-words-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+/* Responsive for mobile */
+@media (max-width: 600px) {
+  .main-container {
+    flex-direction: column;
+    gap: 1rem;
+    height: auto;
+    min-height: 0;
+  }
+  .game-header {
+    padding: 0 0.5rem;
+  }
+
+  .made-words-wrapper {
+    flex: 1 1 auto;
+    min-width: 200px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align items to the start horizontally */
+    justify-content: flex-start; /* Align items to the start vertically */
+    border-radius: 1rem;
+    box-sizing: border-box;
+    padding: 1rem;
+    overflow: auto;
+  }
+  .game-board-container {
+    aspect-ratio: 7 / 8;
+    width: 100%;
+    max-width: 80%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0 auto;
+    min-height: unset;
+    flex: none;
+  }
+}
+
+.made-word {
+  visibility: visible;
+  display: block;
+  color: black; /* Ensure text is visible */
+  overflow: visible;
+  font-size: 1.2rem; /* Adjust this value to control the font size */
+}

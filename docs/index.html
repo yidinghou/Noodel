@@ -1,41 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Noodle 🍝</title>
-    <link rel="stylesheet" href="styles/styles.css">
-    <link rel="stylesheet" href="styles/themes.css">
-</head>
-<body>
+    <link rel="stylesheet" href="styles/layout.css" />
+    <link rel="stylesheet" href="styles/tiles.css" />
+    <link rel="stylesheet" href="styles/game-header.css" />
+  </head>
+  <body>
     <header class="game-header">
-        <h1 class="game-title">Noodel 🍝</h1>
-        <div class="score-container">
-            <h2 id="score">Score: <span>0</span></h2>
-            <h2 id="letters-remaining-container">Letters Remaining: <span id="letters-remaining-counter">100</span></h2>
-        </div>
+      <div class="game-title">Noodel 🍝</div>
+      <div class="start-btn-div">
+        <button class="start-btn">Start Game</button>
+      </div>
+      <div class="score-container">
+        <h2 id="score">Score: <span>0</span></h2>
+        <h2 id="letters-remaining-container">
+          Letters Remaining: <span id="letters-remaining-counter">100</span>
+        </h2>
+      </div>
+      <button id="sound-toggle" class="sound-toggle">Mute</button>
     </header>
-    
     <div class="main-container">
-        <!-- Game Board with integrated horizontal next tiles panel -->
-        <div class="game-board">
-            <div class="game-board-container">
-                <div class="preview-panel">
-                    <div id="preview-container" class="next-tiles"></div>
-                </div>
-                <div id="spawn-row"></div>
-                <div id="game-board"></div>
-            </div>
+      <div class="game-board-container"></div>
+      <div class="made-words-wrapper">
+        <h2 class="made-words-header">Words Made</h2>
+        <div id="made-words-list" class="made-words-list">
+          <!-- Word list items will go here -->
         </div>
-
-        <!-- Right panel: Made Words -->
-        <div class="right-panel">
-            <div class="panel-title">Made Words</div>
-            <div id="made-words-list" class="made-words"></div>
-        </div>
+      </div>
     </div>
-
-    <script src="../src/cat-animation.js"></script>
-    <script type="module" src="./src/main.js"></script>
-</body>
+    <script type="module" src="./main.js"></script>
+  </body>
 </html>
