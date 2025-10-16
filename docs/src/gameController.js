@@ -28,6 +28,8 @@ import {SpawnRow} from "./gameSpawnRow.js";
 import {GameBoard} from "./gameBoard.js";
 import { Renderer } from "../src/renderer.js";
 import { WordValidator } from "./wordValidator.js"; // Import WordValidator
+import { SoundManager } from "./soundManager.js";
+import { WordListManager } from "./wordListManager.js";
 export class Game {
   constructor() {
     this.renderer = new Renderer();
@@ -37,13 +39,9 @@ export class Game {
     this.wordValidator = new WordValidator(); // Initialize WordValidator
     this.isGameStarted = false; // Flag to track if the game has started
     this.madeWords = []; // Internal list to keep track of made words
-    this.isSoundMuted = false; // Track if sound is muted
-
-    // Add event listener for the sound toggle button
-    const soundToggleButton = document.getElementById('sound-toggle');
-    if (soundToggleButton) {
-        soundToggleButton.addEventListener('click', () => this.toggleSound());
-    }
+    // Managers (extract responsibilities)
+    this.soundManager = new SoundManager();
+    this.wordListManager = new WordListManager();
   }
 
   async init() {
@@ -150,10 +148,8 @@ export class Game {
   }
 
   async handleBoardClick(col) {
-    if (!this.isSoundMuted) {
-      const dropSound = new Audio('./src/sounds/tile-drop.mp3');
-      dropSound.play();
-    }
+    // Delegate sound playback to SoundManager
+    this.soundManager.playDrop();
 
     // Add the column to the drop queue
     this.dropQueue.push(col);
@@ -281,11 +277,13 @@ export class Game {
 
     console.log(`Processing ${foundWords.length} total words`);
 
-    // Add found words to the made words list and update the DOM
-    const madeWordsList = document.getElementById('made-words-list'); // Get the HTML element for the word list
-    const longestWord = foundWords.slice(-1)[0];
-    this.madeWords.push(longestWord.letters); // Add to the internal list
-    this._addWordToDOM(longestWord, madeWordsList); // Refactored into a separate function
+  // Add found words to the made words list and update the DOM via WordListManager
+  const longestWord = foundWords.slice(-1)[0];
+  this.madeWords.push(longestWord.letters); // Add to the internal list
+  const definition = this.wordValidator.dictionary.getDefinition(longestWord.letters.toLowerCase());
+  this.wordListManager.addWord(longestWord, definition);
+  // Play a sound for making a word
+  this.soundManager.playMadeWord(longestWord.letters.length);
 
     const allPositions = foundWords.flatMap(word => word.positions);
     const affectedColumns = new Set(allPositions.map(pos => pos[1]));
@@ -294,65 +292,10 @@ export class Game {
   }
 
   _addWordToDOM(word, madeWordsList) {
-    // Create a new DOM element for the word and definition
-    const wordElement = document.createElement('div');
-    wordElement.className = 'made-word';
-
-    // Format the word and definition
-    const definition = this.wordValidator.dictionary.getDefinition(word.letters.toLowerCase());
-    wordElement.innerHTML = `<strong>${word.letters}</strong>: ${definition || 'No definition available'}`;
-
-    madeWordsList.prepend(wordElement); // Prepend the word element to the list
-    this.playMadeWordSound(word.letters.length); // Play sound based on word length
+  // Deprecated: functionality moved to WordListManager and SoundManager
+  return;
   }
 
-  toggleSound() {
-    this.isSoundMuted = !this.isSoundMuted; // Toggle the sound state
-
-    // Update the button text
-    const soundToggleButton = document.getElementById('sound-toggle');
-    if (soundToggleButton) {
-        soundToggleButton.textContent = this.isSoundMuted ? 'Unmute' : 'Mute';
-    }
-
-    console.log(`Sound is now ${this.isSoundMuted ? 'muted' : 'unmuted'}.`);
-}
-
-  playMadeWordSound(word_length) {
-    if (this.isSoundMuted) {
-        console.log('Sound is muted. No sound will be played.');
-        return; // Prevent any sound from playing if muted
-    }
-
-    const madeWordSound1 = new Audio('./src/sounds/word-made-1.mp3');
-    const madeWordSound2 = new Audio('./src/sounds/word-made-2.mp3');
-    const madeWordSound3 = new Audio('./src/sounds/word-made-3.mp3');
-    const madeWordSpecial = new Audio('./src/sounds/word-made-special.mp3');
-
-    const sounds = [
-        { sound: madeWordSpecial, weight: word_length >= 4 ? 0.6 : 0 },
-        { sound: madeWordSound1, weight: 0.1 },
-        { sound: madeWordSound2, weight: 0.1 },
-        { sound: madeWordSound3, weight: 0.1 }
-    ];
-
-    const totalWeight = sounds.reduce((sum, { weight }) => sum + weight, 0);
-    const normalizedSounds = sounds.map(({ sound, weight }) => ({
-        sound,
-        weight: weight / totalWeight
-    }));
-
-    const random = Math.random();
-    let cumulativeWeight = 0;
-
-    for (const { sound, weight } of normalizedSounds) {
-        cumulativeWeight += weight;
-        if (random < cumulativeWeight) {
-            sound.play();
-            break;
-        }
-    }
-}
 
   _getNextPositionsToCheck(affectedColumns, dedupeFunc) {
     const nextPositions = [...affectedColumns].flatMap(col => {
