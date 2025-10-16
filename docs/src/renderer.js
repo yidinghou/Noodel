@@ -39,8 +39,8 @@ export class Renderer {
     document.body.removeChild(clone);
 
     targetTile.classList.remove('hidden');
-    targetTile.classList.add('locked')
-   }
+    targetTile.classList.add('locked');
+  }
 
   animateTilesInOrder(tiles, animationClass = 'animate', delay = 80) {
     tiles.forEach((tile, i) => {
@@ -100,8 +100,8 @@ export class Renderer {
 
   cancelAnimation() {
     if (this.currentAnimation) {
-        this.currentAnimation.cancel(); // Cancel the ongoing animation
-        this.currentAnimation = null;
+      this.currentAnimation.cancel(); // Cancel the ongoing animation
+      this.currentAnimation = null;
     }
   }
 }

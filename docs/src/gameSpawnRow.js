@@ -33,17 +33,17 @@ export class SpawnRow {
   }
 
   getActiveSpawnTile() {
-    return this.tiles.find(tile => tile.classList.contains('active'));
+    return this.tiles.find((tile) => tile.classList.contains('active'));
   }
 
   countActiveSpawnTiles() {
-    return this.tiles.filter(tile => tile.textContent.trim() !== '').length;
+    return this.tiles.filter((tile) => tile.textContent.trim() !== '').length;
   }
 
   isFull() {
     return this.countActiveSpawnTiles() === 1; // Only one active tile at a time
   }
-  
+
   setSpawnRowContent(letters) {
     this.clearAllSpawnTiles();
     for (let col = 0; col < this.cols; col++) {
@@ -57,7 +57,7 @@ export class SpawnRow {
     return this.tiles[col];
   }
 
-  setSpawnTileContent(col, content) { 
+  setSpawnTileContent(col, content) {
     const tile = this.getSpawnTileElement(col);
     if (tile) tile.textContent = content;
   }

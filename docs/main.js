@@ -1,4 +1,4 @@
-import { Game } from "./src/gameController.js";
+import { Game } from './src/gameController.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   const game = new Game();

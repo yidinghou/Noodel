@@ -145,7 +145,7 @@ describe('WordValidator - Letter Collection Methods', () => {
         expect(result.letters).toBe(result2.letters);
         expect(result.positions).toEqual(result2.positions);
 
-        expect(result.letters).toBe(' FUN '); 
+        expect(result.letters).toBe(' FUN ');
         expect(result.positions[0]).toEqual([5, 2]);
         expect(result.positions[1]).toEqual([4, 3]);
         expect(result.positions[2]).toEqual([3, 4]);

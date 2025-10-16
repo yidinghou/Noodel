@@ -2,7 +2,8 @@
 export class SoundManager {
   constructor({ toggleButtonId = 'sound-toggle' } = {}) {
     this.isMuted = false;
-    this.toggleBtn = typeof document !== 'undefined' ? document.getElementById(toggleButtonId) : null;
+    this.toggleBtn =
+      typeof document !== 'undefined' ? document.getElementById(toggleButtonId) : null;
 
     if (this.toggleBtn) {
       this.toggleBtn.addEventListener('click', () => this.toggleMute());
@@ -15,7 +16,7 @@ export class SoundManager {
       word1: new Audio('./src/sounds/word-made-1.mp3'),
       word2: new Audio('./src/sounds/word-made-2.mp3'),
       word3: new Audio('./src/sounds/word-made-3.mp3'),
-      special: new Audio('./src/sounds/word-made-special.mp3')
+      special: new Audio('./src/sounds/word-made-special.mp3'),
     };
   }
 
@@ -47,7 +48,9 @@ export class SoundManager {
   _play(audio) {
     try {
       audio.currentTime = 0;
-      audio.play().catch(() => {/* ignore autoplay block errors */});
+      audio.play().catch(() => {
+        /* ignore autoplay block errors */
+      });
     } catch (e) {
       // ignore playback errors
     }

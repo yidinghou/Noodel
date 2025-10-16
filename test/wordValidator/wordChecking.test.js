@@ -15,7 +15,8 @@ describe('WordValidator - Word Checking', () => {
     validator = new WordValidator(3);
     // Mock dictionary with test words
     validator.dictionary.validWords = new Set(['cat', 'dog', 'hat', 'car', 'art', 'tar']);
-    validator.dictionary.hasWord = (word) => validator.dictionary.validWords.has(word.toLowerCase());
+    validator.dictionary.hasWord = (word) =>
+      validator.dictionary.validWords.has(word.toLowerCase());
     validator.isReady = true;
   });
 
@@ -31,7 +32,11 @@ describe('WordValidator - Word Checking', () => {
       expect(result).toHaveLength(1);
       expect(result[0].letters).toBe('CAT');
       expect(result[0].direction).toBe('row');
-      expect(result[0].positions).toEqual([[2,1], [2,2], [2,3]]);
+      expect(result[0].positions).toEqual([
+        [2, 1],
+        [2, 2],
+        [2, 3],
+      ]);
     });
 
     it('should find word in column direction', () => {
@@ -45,7 +50,11 @@ describe('WordValidator - Word Checking', () => {
       expect(result).toHaveLength(1);
       expect(result[0].letters).toBe('DOG');
       expect(result[0].direction).toBe('column');
-      expect(result[0].positions).toEqual([[1,3], [2,3], [3,3]]);
+      expect(result[0].positions).toEqual([
+        [1, 3],
+        [2, 3],
+        [3, 3],
+      ]);
     });
 
     it('should find word in topToBottom diagonal', () => {
@@ -59,7 +68,11 @@ describe('WordValidator - Word Checking', () => {
       expect(result).toHaveLength(1);
       expect(result[0].letters).toBe('HAT');
       expect(result[0].direction).toBe('diagonalTB');
-      expect(result[0].positions).toEqual([[0,0], [1,1], [2,2]]);
+      expect(result[0].positions).toEqual([
+        [0, 0],
+        [1, 1],
+        [2, 2],
+      ]);
     });
 
     it('should find word in bottomToTop diagonal', () => {
@@ -73,15 +86,19 @@ describe('WordValidator - Word Checking', () => {
       expect(result).toHaveLength(1);
       expect(result[0].letters).toBe('CAR');
       expect(result[0].direction).toBe('diagonalBT');
-      expect(result[0].positions).toEqual([[3,2], [2,3], [1,4]]);
+      expect(result[0].positions).toEqual([
+        [3, 2],
+        [2, 3],
+        [1, 4],
+      ]);
     });
 
     it('should find multiple words in different directions with shared letter', () => {
       // Set up intersecting words: "CAT" horizontal and "ART" vertical sharing 'A'
       board.setTileContent(2, 1, 'C');
-      board.setTileContent(2, 2, 'A');  // Shared letter between both words
+      board.setTileContent(2, 2, 'A'); // Shared letter between both words
       board.setTileContent(2, 3, 'T');
-      
+
       // Complete the vertical "ART" word with 'A' already placed at [2,2]
       board.setTileContent(3, 2, 'R');
       board.setTileContent(4, 2, 'T');
@@ -89,17 +106,25 @@ describe('WordValidator - Word Checking', () => {
       const result = validator.checkForWords(2, 2, board);
 
       expect(result).toHaveLength(2);
-      
-      const catWord = result.find(w => w.letters === 'CAT');
-      const artWord = result.find(w => w.letters === 'ART');
-      
+
+      const catWord = result.find((w) => w.letters === 'CAT');
+      const artWord = result.find((w) => w.letters === 'ART');
+
       expect(catWord).toBeTruthy();
       expect(catWord.direction).toBe('row');
-      expect(catWord.positions).toEqual([[2,1], [2,2], [2,3]]);
-      
+      expect(catWord.positions).toEqual([
+        [2, 1],
+        [2, 2],
+        [2, 3],
+      ]);
+
       expect(artWord).toBeTruthy();
       expect(artWord.direction).toBe('column');
-      expect(artWord.positions).toEqual([[2,2], [3,2], [4,2]]);
+      expect(artWord.positions).toEqual([
+        [2, 2],
+        [3, 2],
+        [4, 2],
+      ]);
     });
 
     it('should handle words with gaps (spaces between letters)', () => {
@@ -112,7 +137,7 @@ describe('WordValidator - Word Checking', () => {
       const result = validator.checkForWords(2, 2, board);
 
       // Should find individual letters or shorter segments, but not "CAT" due to gap
-      const catWord = result.find(w => w.letters === 'CAT');
+      const catWord = result.find((w) => w.letters === 'CAT');
       expect(catWord).toBeFalsy(); // Should not find "CAT" with gaps
     });
 
@@ -137,7 +162,11 @@ describe('WordValidator - Word Checking', () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].letters).toBe('DOG');
-      expect(result[0].positions).toEqual([[3,0], [3,1], [3,2]]);
+      expect(result[0].positions).toEqual([
+        [3, 0],
+        [3, 1],
+        [3, 2],
+      ]);
     });
 
     it('should return empty array when no words found', () => {
@@ -171,8 +200,8 @@ describe('WordValidator - Word Checking', () => {
       const result = validator.checkForWords(2, 2, board);
 
       expect(result).toHaveLength(2);
-      expect(result.some(w => w.letters === 'CAT')).toBe(true);
-      expect(result.some(w => w.letters === 'DOG')).toBe(true);
+      expect(result.some((w) => w.letters === 'CAT')).toBe(true);
+      expect(result.some((w) => w.letters === 'DOG')).toBe(true);
     });
 
     it('should handle board edge cases', () => {
@@ -211,7 +240,11 @@ describe('WordValidator - Word Checking', () => {
       expect(result).toHaveLength(1);
       expect(result[0].letters).toBe('DOG');
       expect(result[0].direction).toBe('row');
-      expect(result[0].positions).toEqual([[3,0], [3,1], [3,2]]);
+      expect(result[0].positions).toEqual([
+        [3, 0],
+        [3, 1],
+        [3, 2],
+      ]);
     });
 
     it('should find words from left edge when checking from any position in the word', () => {
@@ -228,11 +261,19 @@ describe('WordValidator - Word Checking', () => {
       // Both should find the same word starting from column 0
       expect(result1).toHaveLength(1);
       expect(result1[0].letters).toBe('TAR');
-      expect(result1[0].positions).toEqual([[4,0], [4,1], [4,2]]);
+      expect(result1[0].positions).toEqual([
+        [4, 0],
+        [4, 1],
+        [4, 2],
+      ]);
 
       expect(result2).toHaveLength(1);
       expect(result2[0].letters).toBe('TAR');
-      expect(result2[0].positions).toEqual([[4,0], [4,1], [4,2]]);
+      expect(result2[0].positions).toEqual([
+        [4, 0],
+        [4, 1],
+        [4, 2],
+      ]);
     });
 
     it('should find multiple words when one starts from left edge', () => {
@@ -240,7 +281,7 @@ describe('WordValidator - Word Checking', () => {
       board.setTileContent(2, 0, 'C'); // Left edge
       board.setTileContent(2, 1, 'A'); // Shared letter
       board.setTileContent(2, 2, 'T');
-      
+
       // Complete vertical "ART" word
       board.setTileContent(3, 1, 'R');
       board.setTileContent(4, 1, 'T');
@@ -248,14 +289,14 @@ describe('WordValidator - Word Checking', () => {
       const result = validator.checkForWords(2, 1, board); // Check from shared 'A'
 
       expect(result).toHaveLength(2);
-      
-      const catWord = result.find(w => w.letters === 'CAT');
-      const artWord = result.find(w => w.letters === 'ART');
-      
+
+      const catWord = result.find((w) => w.letters === 'CAT');
+      const artWord = result.find((w) => w.letters === 'ART');
+
       expect(catWord).toBeTruthy();
       expect(catWord.direction).toBe('row');
       expect(catWord.positions[0]).toEqual([2, 0]); // Starts from column 0
-      
+
       expect(artWord).toBeTruthy();
       expect(artWord.direction).toBe('column');
     });
@@ -264,7 +305,8 @@ describe('WordValidator - Word Checking', () => {
   describe('findWordsAt', () => {
     beforeEach(() => {
       validator.dictionary.validWords = new Set(['cat', 'dog', 'art']);
-      validator.dictionary.hasWord = (word) => validator.dictionary.validWords.has(word.toLowerCase());
+      validator.dictionary.hasWord = (word) =>
+        validator.dictionary.validWords.has(word.toLowerCase());
       validator.isReady = true;
     });
 
@@ -277,12 +319,18 @@ describe('WordValidator - Word Checking', () => {
       board.setTileContent(4, 2, 'T');
 
       // Check from all positions of both words
-      const positions = [[2,1], [2,2], [2,3], [3,2], [4,2]];
+      const positions = [
+        [2, 1],
+        [2, 2],
+        [2, 3],
+        [3, 2],
+        [4, 2],
+      ];
       const result = validator.findWordsAt(board, positions);
 
       expect(result).toHaveLength(2); // Should find CAT and ART, but only once each
-      expect(result.some(w => w.letters === 'CAT')).toBe(true);
-      expect(result.some(w => w.letters === 'ART')).toBe(true);
+      expect(result.some((w) => w.letters === 'CAT')).toBe(true);
+      expect(result.some((w) => w.letters === 'ART')).toBe(true);
     });
 
     it('should return an empty array if no positions are provided', () => {

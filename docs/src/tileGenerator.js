@@ -3,8 +3,8 @@
  * for a tile-based word game.
  */
 
-import {PreviewContainer} from './gamePreviewContainer.js';
-import {SpawnRow} from './gameSpawnRow.js';
+import { PreviewContainer } from './gamePreviewContainer.js';
+import { SpawnRow } from './gameSpawnRow.js';
 
 export class TileGenerator {
   /**
@@ -164,12 +164,12 @@ export class TileGenerator {
   getNextTile() {
     // If we've exhausted the current batch, wrap around to the beginning
     if (this.currentIndex >= this.tiles.length) {
-      return " "; // Return empty string if out of tiles
+      return ' '; // Return empty string if out of tiles
     }
 
     // Return the current tile and increment the index
     const nextTile = this.tiles[this.currentIndex];
-  
+
     this.currentIndex++;
 
     return nextTile.toUpperCase();

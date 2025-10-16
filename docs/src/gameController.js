@@ -1,6 +1,6 @@
 function populateGameBoardTiles() {
   const gameBoardContainer = document.getElementsByClassName('game-board-container')[0];
-    for (let row = 0; row < 8; row++) {
+  for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 7; col++) {
       const tile = document.createElement('div');
       tile.className = 'tile board';
@@ -20,16 +20,16 @@ function populateGameBoardTiles() {
 }
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-import { PreviewContainer} from "./gamePreviewContainer.js";
-import {SpawnRow} from "./gameSpawnRow.js";
-import {GameBoard} from "./gameBoard.js";
-import { Renderer } from "../src/renderer.js";
-import { WordValidator } from "./wordValidator.js"; // Import WordValidator
-import { SoundManager } from "./soundManager.js";
-import { WordListManager } from "./wordListManager.js";
+import { PreviewContainer } from './gamePreviewContainer.js';
+import { SpawnRow } from './gameSpawnRow.js';
+import { GameBoard } from './gameBoard.js';
+import { Renderer } from '../src/renderer.js';
+import { WordValidator } from './wordValidator.js'; // Import WordValidator
+import { SoundManager } from './soundManager.js';
+import { WordListManager } from './wordListManager.js';
 export class Game {
   constructor() {
     this.renderer = new Renderer();
@@ -48,21 +48,28 @@ export class Game {
     populateGameBoardTiles();
     this.setupGameBoardInteraction();
 
-    const previewTileRow = Array.from(document.querySelectorAll('.game-board-container .tile[data-row="0"]'));
+    const previewTileRow = Array.from(
+      document.querySelectorAll('.game-board-container .tile[data-row="0"]')
+    );
     this.previewContainer = new PreviewContainer(previewTileRow, 3, this.renderer); // Pass the Renderer instance
 
-    const spawnTileRow = Array.from(document.querySelectorAll('.game-board-container .tile[data-row="1"]'));
+    const spawnTileRow = Array.from(
+      document.querySelectorAll('.game-board-container .tile[data-row="1"]')
+    );
     this.spawnRow = new SpawnRow(spawnTileRow, this.renderer);
     this.spawnRow.observer = this.previewContainer;
 
-    const gameBoardRows = Array.from(document.querySelectorAll('.game-board-container .tile[data-row="2"], .game-board-container .tile[data-row="3"], .game-board-container .tile[data-row="4"], .game-board-container .tile[data-row="5"], .game-board-container .tile[data-row="6"], .game-board-container .tile[data-row="7"]'));
+    const gameBoardRows = Array.from(
+      document.querySelectorAll(
+        '.game-board-container .tile[data-row="2"], .game-board-container .tile[data-row="3"], .game-board-container .tile[data-row="4"], .game-board-container .tile[data-row="5"], .game-board-container .tile[data-row="6"], .game-board-container .tile[data-row="7"]'
+      )
+    );
     this.gameBoard = new GameBoard(gameBoardRows);
-  
-    await this.wordValidator.init();
 
+    await this.wordValidator.init();
   }
 
-  startButtonAction(){
+  startButtonAction() {
     this.previewContainer.initialize();
     this.spawnRow.initialize();
     this.isGameStarted = true; // Enable hover listeners when the game starts
@@ -70,12 +77,12 @@ export class Game {
     // Set the letters remaining counter to the length of the preview tiles
     const lettersRemainingCounter = document.getElementById('letters-remaining-counter');
     if (lettersRemainingCounter) {
-        const previewTilesLength = this.previewContainer.tileGenerator.tileCount;
-        lettersRemainingCounter.textContent = previewTilesLength;
+      const previewTilesLength = this.previewContainer.tileGenerator.tileCount;
+      lettersRemainingCounter.textContent = previewTilesLength;
     }
-}
-    
-  async resetButtonAction(){
+  }
+
+  async resetButtonAction() {
     this.previewContainer.reset();
     this.gameBoard.resetBoard();
     await sleep(200);
@@ -83,7 +90,7 @@ export class Game {
     this.clearMadeWords();
     this.startButtonAction();
   }
-  
+
   setupGameBoardInteraction() {
     const gameBoardContainer = document.querySelector('.game-board-container');
 
@@ -131,8 +138,8 @@ export class Game {
     const spawnTile = this.spawnRow.getSpawnTileElement(col);
     if (spawnTile) {
       this.spawnRow.clearAllSpawnTiles(); // Clear other hover effects
-      spawnTile.classList.add("active"); // Add the hover-active class
-      spawnTile.classList.add("hover"); // Ensure the spawn class is preserved
+      spawnTile.classList.add('active'); // Add the hover-active class
+      spawnTile.classList.add('hover'); // Ensure the spawn class is preserved
     }
   }
 
@@ -142,8 +149,8 @@ export class Game {
     const spawnTile = this.spawnRow.getSpawnTileElement(clampedCol);
     if (spawnTile) {
       this.spawnRow.clearAllSpawnTiles(); // Clear other hover effects
-      spawnTile.classList.add("active"); // Add the hover-active class
-      spawnTile.classList.add("hover"); // Ensure the spawn class is preserved
+      spawnTile.classList.add('active'); // Add the hover-active class
+      spawnTile.classList.add('hover'); // Ensure the spawn class is preserved
     }
   }
 
@@ -156,22 +163,22 @@ export class Game {
 
     // If an animation is already in progress, skip to the next animation
     if (this.isAnimating) {
-        return;
+      return;
     }
 
     // Decrease the letters remaining counter
     const lettersRemainingCounter = document.getElementById('letters-remaining-counter');
     const currentCount = parseInt(lettersRemainingCounter.textContent, 10);
     if (!isNaN(currentCount) && currentCount > 0) {
-        lettersRemainingCounter.textContent = currentCount - 1;
+      lettersRemainingCounter.textContent = currentCount - 1;
     }
 
     // Process the queue
     while (this.dropQueue.length > 0) {
-        const nextCol = this.dropQueue.shift(); // Get the next column from the queue
-        await this.processTileDrop(nextCol); // Wait for the current drop to complete
+      const nextCol = this.dropQueue.shift(); // Get the next column from the queue
+      await this.processTileDrop(nextCol); // Wait for the current drop to complete
     }
-}
+  }
 
   async processTileDrop(col) {
     this.isAnimating = true; // Lock the animation
@@ -181,23 +188,23 @@ export class Game {
     // Immediately update the spawn row
     const currentTile = this.spawnRow.getActiveSpawnTile();
     if (!currentTile) {
-        console.log("No active tile in the spawn row.");
-        this.isAnimating = false;
-        return; // No active tile to drop
+      console.log('No active tile in the spawn row.');
+      this.isAnimating = false;
+      return; // No active tile to drop
     }
-    
+
     const startingRow = parseInt(currentTile.dataset.row, 10); // Get the starting row index
     const targetPos = this.gameBoard.getLowestEmptyRow(col);
     if (targetPos === -1) {
-        console.log("Column is full. Cannot place tile.");
-        this.isAnimating = false;
-        return; // Column is full, do nothing
+      console.log('Column is full. Cannot place tile.');
+      this.isAnimating = false;
+      return; // Column is full, do nothing
     }
 
     const targetTile = this.gameBoard.getTileElement(targetPos, col);
     if (!targetTile) {
-        this.isAnimating = false;
-        return;
+      this.isAnimating = false;
+      return;
     }
 
     // Set the content of the target tile
@@ -206,11 +213,11 @@ export class Game {
 
     // Skip animation if there are more clicks in the queue
     if (this.dropQueue.length > 0) {
-        console.log("Skipping animation due to multiple clicks.");
+      console.log('Skipping animation due to multiple clicks.');
     } else {
-        // Animate the tile movement
-        const rowsDropped = targetPos - startingRow; // Calculate rows dropped
-        await this.renderer.animateTileMovement(currentTile, targetTile, rowsDropped);
+      // Animate the tile movement
+      const rowsDropped = targetPos - startingRow; // Calculate rows dropped
+      await this.renderer.animateTileMovement(currentTile, targetTile, rowsDropped);
     }
 
     // Clear the spawn tile after animation
@@ -235,7 +242,7 @@ export class Game {
 
   async _resolveAndAnimateChains(startPositions) {
     const dedupePositions = (positions) =>
-      [...new Set(positions.map(p => JSON.stringify(p)))].map(s => JSON.parse(s));
+      [...new Set(positions.map((p) => JSON.stringify(p)))].map((s) => JSON.parse(s));
 
     let positionsToCheck = dedupePositions(startPositions);
 
@@ -244,7 +251,7 @@ export class Game {
       // Part 1: Find words and collect their data
       const wordData = this._findAndProcessWords(positionsToCheck);
       if (!wordData) {
-        console.log("No more words found. Exiting chain resolution.");
+        console.log('No more words found. Exiting chain resolution.');
         break; // No more words found, exit loop
       }
 
@@ -256,7 +263,7 @@ export class Game {
 
       // Part 2: Get all tiles in affected columns for the next check
       if (affectedColumns.size === 0) {
-        console.log("No affected columns. Exiting chain resolution.");
+        console.log('No affected columns. Exiting chain resolution.');
         break;
       }
 
@@ -277,28 +284,29 @@ export class Game {
 
     console.log(`Processing ${foundWords.length} total words`);
 
-  // Add found words to the made words list and update the DOM via WordListManager
-  const longestWord = foundWords.slice(-1)[0];
-  this.madeWords.push(longestWord.letters); // Add to the internal list
-  const definition = this.wordValidator.dictionary.getDefinition(longestWord.letters.toLowerCase());
-  this.wordListManager.addWord(longestWord, definition);
-  // Play a sound for making a word
-  this.soundManager.playMadeWord(longestWord.letters.length);
+    // Add found words to the made words list and update the DOM via WordListManager
+    const longestWord = foundWords.slice(-1)[0];
+    this.madeWords.push(longestWord.letters); // Add to the internal list
+    const definition = this.wordValidator.dictionary.getDefinition(
+      longestWord.letters.toLowerCase()
+    );
+    this.wordListManager.addWord(longestWord, definition);
+    // Play a sound for making a word
+    this.soundManager.playMadeWord(longestWord.letters.length);
 
-    const allPositions = foundWords.flatMap(word => word.positions);
-    const affectedColumns = new Set(allPositions.map(pos => pos[1]));
+    const allPositions = foundWords.flatMap((word) => word.positions);
+    const affectedColumns = new Set(allPositions.map((pos) => pos[1]));
 
     return { allPositions, affectedColumns };
   }
 
   _addWordToDOM(word, madeWordsList) {
-  // Deprecated: functionality moved to WordListManager and SoundManager
-  return;
+    // Deprecated: functionality moved to WordListManager and SoundManager
+    return;
   }
 
-
   _getNextPositionsToCheck(affectedColumns, dedupeFunc) {
-    const nextPositions = [...affectedColumns].flatMap(col => {
+    const nextPositions = [...affectedColumns].flatMap((col) => {
       const filled = this.gameBoard.countTilesPerColumn(col);
       if (!filled) {
         console.log(`Column ${col} is empty.`);
@@ -311,11 +319,11 @@ export class Game {
   }
 
   checkSpawnRowStatus() {
-      // Check the state
-      if (!this.spawnRow.isFull()) {
-          console.log("Spawn Row is now full! Triggering spawn action.");
-          this.spawnRow.initialize();
-      }
+    // Check the state
+    if (!this.spawnRow.isFull()) {
+      console.log('Spawn Row is now full! Triggering spawn action.');
+      this.spawnRow.initialize();
+    }
   }
 
   clearMadeWords() {
@@ -330,6 +338,5 @@ export class Game {
     }
 
     console.log('Made words list cleared.');
-}
-
+  }
 }

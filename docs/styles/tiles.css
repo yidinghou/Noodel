@@ -1,10 +1,10 @@
 .tile {
-	box-sizing: border-box;
-	width: 100%;
-	aspect-ratio: 1 / 1;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 1.5rem; /* Adjust this value to control the font size */
 }
 
@@ -15,7 +15,8 @@
 }
 
 /* Spawn row inactive: invisible border and text */
-.tile.inactive, .tile.inactive {
+.tile.inactive,
+.tile.inactive {
   border: 1px solid transparent;
   opacity: 0;
 }
@@ -25,14 +26,20 @@
 }
 
 @keyframes nudge-right {
-  0%   { transform: translateX(0); }
-  40%  { transform: translateX(12px); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+  40% {
+    transform: translateX(12px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
-
 /* Spawn row active: bold border */
-.tile.active, .tile.active {
+.tile.active,
+.tile.active {
   border: 1px solid #222;
   opacity: 1;
 }
@@ -58,9 +65,23 @@
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0) scale(1.1); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px) scale(1.1); }
-  20%, 40%, 60%, 80% { transform: translateX(5px) scale(1.1); }
+  0%,
+  100% {
+    transform: translateX(0) scale(1.1);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px) scale(1.1);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px) scale(1.1);
+  }
 }
 
 /* Additional pulsing effect for highlighted tiles */
@@ -69,23 +90,23 @@
 }
 
 @keyframes shake-pulse {
-  0% { 
+  0% {
     transform: translateX(0) scale(1.1);
     box-shadow: 0 0 20px rgba(40, 167, 69, 0.6);
   }
-  25% { 
+  25% {
     transform: translateX(-5px) scale(1.15);
     box-shadow: 0 0 25px rgba(40, 167, 69, 0.8);
   }
-  50% { 
+  50% {
     transform: translateX(5px) scale(1.1);
-    box-shadow: 0 0 30px rgba(40, 167, 69, 1.0);
+    box-shadow: 0 0 30px rgba(40, 167, 69, 1);
   }
-  75% { 
+  75% {
     transform: translateX(-3px) scale(1.15);
     box-shadow: 0 0 25px rgba(40, 167, 69, 0.8);
   }
-  100% { 
+  100% {
     transform: translateX(0) scale(1.1);
     box-shadow: 0 0 20px rgba(40, 167, 69, 0.6);
   }
@@ -102,8 +123,7 @@
   background-color: rgba(0, 255, 0, 0.3); /* Example hover effect */
 }
 
-
-.tile.board.hidden{
+.tile.board.hidden {
   color: transparent;
 }
 

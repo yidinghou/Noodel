@@ -1,4 +1,3 @@
-
 /**
  * Dictionary class for loading and managing word data
  */
@@ -29,13 +28,13 @@ export class WordDictionary {
       for (const file of csvFiles) {
         const response = await fetch(file);
         if (!response.ok) continue;
-        
+
         const data = await response.text();
-        const lines = data.split('\n').filter(line => line.trim().length > 2);
+        const lines = data.split('\n').filter((line) => line.trim().length > 2);
         if (lines.length <= 2) continue;
 
         // Parse Headers
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        const headers = lines[0].split(',').map((h) => h.trim().toLowerCase());
         const wordIdx = headers.indexOf('word');
         const defIdx = headers.indexOf('definition');
         if (wordIdx === -1 || defIdx === -1) continue;
@@ -45,21 +44,20 @@ export class WordDictionary {
           const row = lines[i].split(',');
           const wordRaw = row[wordIdx];
           const defRaw = row[defIdx];
-          
+
           if (!wordRaw) continue;
-          
+
           const word = wordRaw.trim();
           const definition = defRaw?.replace(/[\r\n]/g, '<br>') || 'Definition not found';
-          
+
           if (this._isValidWord(word)) {
             this.validWords.push(word);
             this.wordDefinitions[word] = definition;
           }
         }
       }
-      
+
       console.log(`Dictionary: Loaded ${this.validWords.length} words from all CSVs.`);
-      
     } catch (error) {
       console.error('Error loading words:', error);
     }
@@ -97,8 +95,6 @@ export class WordDictionary {
    * @private
    */
   _isValidWord(word) {
-    return word.length >= 3 && 
-           word.length <= 8 && 
-           /^[a-z]+$/.test(word);
+    return word.length >= 3 && word.length <= 8 && /^[a-z]+$/.test(word);
   }
 }

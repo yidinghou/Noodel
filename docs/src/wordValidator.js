@@ -3,7 +3,7 @@
  * and applying special themes when certain words are found.
  */
 
-import { WordDictionary } from "./wordDictionary.js";
+import { WordDictionary } from './wordDictionary.js';
 
 export class WordValidator {
   /**
@@ -35,7 +35,7 @@ export class WordValidator {
       const tile = board.getTileElement(r, col);
       return tile?.textContent || ' ';
     }).join('');
-    
+
     const positions = Array.from({ length: board.rows }, (_, r) => [r, col]);
     return { letters, positions };
   }
@@ -48,7 +48,7 @@ export class WordValidator {
       const tile = board.getTileElement(row, c);
       return tile?.textContent || ' ';
     }).join('');
-    
+
     const positions = Array.from({ length: board.cols }, (_, c) => [row, c]);
     return { letters, positions };
   }
@@ -56,16 +56,16 @@ export class WordValidator {
   /**
    * Collects letters along a diagonal, substituting empty tiles with spaces.
    * @param {number} tileRow - The row of the tile we're checking from
-   * @param {number} tileCol - The column of the tile we're checking from  
+   * @param {number} tileCol - The column of the tile we're checking from
    * @param {string} direction - 'topToBottom' or 'bottomToTop' (always left to right)
    */
   getDiagonalLetters(board, tileRow, tileCol, direction = 'topToBottom') {
     // Calculate the actual start position (leftmost point of the diagonal)
     const { startRow, startCol } = this._findDiagonalStart(board, tileRow, tileCol, direction);
-    
+
     // Generate all positions along the diagonal
     const positions = this._generateDiagonalPositions(board, startRow, startCol, direction);
-    
+
     // Collect letters from all positions
     const letters = positions
       .map(([r, c]) => {
@@ -90,8 +90,9 @@ export class WordValidator {
         r--;
         c--;
       }
-    } else { // bottomToTop
-      // Move to bottom-left corner of diagonal  
+    } else {
+      // bottomToTop
+      // Move to bottom-left corner of diagonal
       while (r < board.rows - 1 && c > 0) {
         r++;
         c--;
@@ -107,7 +108,7 @@ export class WordValidator {
   _generateDiagonalPositions(board, startRow, startCol, direction) {
     const positions = [];
     const rowIncrement = direction === 'topToBottom' ? 1 : -1;
-    
+
     let r = startRow;
     let c = startCol;
 
@@ -125,11 +126,11 @@ export class WordValidator {
    * @param {string} letters - String containing letters and spaces
    * @param {Array} positions - Array of position coordinates [row, col]
    * @returns {Array} Array of objects with {letters, positions} for each continuous segment
-   * 
+   *
    * @example
    * extractContinuousSegments('HAT  ', [[0,0], [0,1], [0,2], [0,3], [0,4]])
    * // Returns: [{letters: 'HAT', positions: [[0,0], [0,1], [0,2]]}]
-   * 
+   *
    * extractContinuousSegments('HAT CAT', [[0,0], [0,1], [0,2], [0,3], [0,4], [0,5], [0,6]])
    * // Returns: [
    * //   {letters: 'HAT', positions: [[0,0], [0,1], [0,2]]},
@@ -143,7 +144,7 @@ export class WordValidator {
 
     for (let i = 0; i < letters.length; i++) {
       const char = letters[i];
-      
+
       if (char !== ' ') {
         // Add letter to current segment
         currentSegment += char;
@@ -153,9 +154,9 @@ export class WordValidator {
         if (currentSegment.length > 0) {
           segments.push({
             letters: currentSegment,
-            positions: [...currentPositions]
+            positions: [...currentPositions],
           });
-          
+
           // Reset for next segment
           currentSegment = '';
           currentPositions = [];
@@ -167,7 +168,7 @@ export class WordValidator {
     if (currentSegment.length > 0) {
       segments.push({
         letters: currentSegment,
-        positions: [...currentPositions]
+        positions: [...currentPositions],
       });
     }
 
@@ -186,10 +187,10 @@ export class WordValidator {
       { name: 'row', getter: () => this.getRowLetters(board, row) },
       { name: 'column', getter: () => this.getColumnLetters(board, col) },
       { name: 'diagonalTB', getter: () => this.getDiagonalLetters(board, row, col, 'topToBottom') },
-      { name: 'diagonalBT', getter: () => this.getDiagonalLetters(board, row, col, 'bottomToTop') }
+      { name: 'diagonalBT', getter: () => this.getDiagonalLetters(board, row, col, 'bottomToTop') },
     ];
 
-    const allWordsAndPositions = directions.flatMap(direction => 
+    const allWordsAndPositions = directions.flatMap((direction) =>
       this._checkDirectionForWords(direction.getter(), direction.name)
     );
 
@@ -206,12 +207,12 @@ export class WordValidator {
   _checkDirectionForWords(letterData, directionName) {
     const { letters, positions } = letterData;
     const segments = this.extractContinuousSegments(letters, positions);
-    
+
     // Find all valid words in each segment and combine them
-    const wordsAndPositions = segments.flatMap(segment => 
-      this._findValidWordsInSegment(segment).map(wordObject => ({
+    const wordsAndPositions = segments.flatMap((segment) =>
+      this._findValidWordsInSegment(segment).map((wordObject) => ({
         ...wordObject,
-        direction: directionName
+        direction: directionName,
       }))
     );
 
@@ -224,29 +225,29 @@ export class WordValidator {
    * @returns {Array} Array of valid words found in the segment
    * @private
    */
-    _findValidWordsInSegment(segment) {
+  _findValidWordsInSegment(segment) {
     const { letters, positions } = segment;
     const validWordsAndPositions = [];
     const segmentLength = letters.length;
-    
+
     // Check all possible substrings of sufficient length
     for (let wordLength = this.minWordLength; wordLength <= segmentLength; wordLength++) {
       // Check each possible starting position for words of this length
       for (let startIdx = 0; startIdx <= segmentLength - wordLength; startIdx++) {
         const wordString = letters.substring(startIdx, startIdx + wordLength);
-        
+
         if (this.dictionary.hasWord(wordString.toLowerCase())) {
           // Get corresponding positions for this word
           const wordPositions = positions.slice(startIdx, startIdx + wordLength);
-          
+
           validWordsAndPositions.push({
             letters: wordString,
-            positions: wordPositions
+            positions: wordPositions,
           });
         }
       }
     }
-    
+
     return validWordsAndPositions;
   }
 
@@ -261,8 +262,9 @@ export class WordValidator {
     if (!Array.isArray(positions) || positions.length === 0) return [];
 
     // Deduplicate input positions
-    const uniquePositions = [...new Set(positions.map(p => JSON.stringify(p)))]
-      .map(s => JSON.parse(s));
+    const uniquePositions = [...new Set(positions.map((p) => JSON.stringify(p)))].map((s) =>
+      JSON.parse(s)
+    );
 
     // Aggregate words found at each unique position
     const allFoundWordsAndPositions = uniquePositions.flatMap(([row, col]) =>
@@ -283,4 +285,3 @@ export class WordValidator {
     return uniqueWordsAndPositions;
   }
 }
-
