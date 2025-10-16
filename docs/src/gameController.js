@@ -321,12 +321,15 @@ export class Game {
   clearMadeWords() {
     this.madeWords = []; // Clear the internal list of made words
 
-    const madeWordsList = document.getElementById('made-words-list');
-    if (madeWordsList) {
-        madeWordsList.innerHTML = ''; // Clear the DOM element displaying the made words
+    // Delegate DOM clearing to WordListManager
+    if (this.wordListManager && typeof this.wordListManager.clear === 'function') {
+      this.wordListManager.clear();
+    } else {
+      const madeWordsList = document.getElementById('made-words-list');
+      if (madeWordsList) madeWordsList.innerHTML = '';
     }
 
-    console.log("Made words list cleared.");
+    console.log('Made words list cleared.');
 }
 
 }
