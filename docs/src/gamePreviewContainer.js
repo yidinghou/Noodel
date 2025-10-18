@@ -10,34 +10,6 @@ export class PreviewContainer {
   constructor(tiles, previewCount = 3, renderer) {
     this.tiles = tiles; // row of tile elements
     this.tileGenerator = new TileGenerator(100);
-    this.tileGenerator.tiles = [
-      'S',
-      'T',
-      'E',
-      'R',
-      'A',
-      'I',
-      'O',
-      'N',
-      'L',
-      'C',
-      'D',
-      'H',
-      'U',
-      'M',
-      'G',
-      'B',
-      'F',
-      'W',
-      'Y',
-      'P',
-      'V',
-      'K',
-      'J',
-      'X',
-      'Q',
-      'Z',
-    ];
     this.renderer = renderer; // Pass the Renderer instance
 
     if (!this.renderer) {
